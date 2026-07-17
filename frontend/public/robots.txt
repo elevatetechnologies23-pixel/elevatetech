@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /employee/
+Disallow: /checkout/
+Disallow: /dashboard/
+
+Sitemap: https://enterprise-electronics.vercel.app/sitemap.xml
