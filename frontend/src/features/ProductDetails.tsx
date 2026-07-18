@@ -68,12 +68,16 @@ const ProductDetails: React.FC = () => {
       } catch (err) {
         console.warn('API error, using offline mock product details fallback');
         const fallbackProd = MOCK_PRODUCTS.find(p => p.id === id) || MOCK_PRODUCTS[0];
-        setProduct(fallbackProd);
-        setActiveImage(fallbackProd.images[0] || '');
-        
-        // Mock related products
-        const fallbackRel = MOCK_PRODUCTS.filter(p => p.id !== fallbackProd.id).slice(0, 3);
-        setRelatedProducts(fallbackRel);
+        if (fallbackProd) {
+          setProduct(fallbackProd);
+          setActiveImage(fallbackProd.images[0] || '');
+          const fallbackRel = MOCK_PRODUCTS.filter(p => p.id !== fallbackProd.id).slice(0, 3);
+          setRelatedProducts(fallbackRel);
+        } else {
+          setProduct(null);
+          setActiveImage('');
+          setRelatedProducts([]);
+        }
       } finally {
         setIsLoading(false);
       }

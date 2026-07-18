@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "seed": "ts-node-dev --respawn --transpile-only src/utils/seeder.ts",
     "test-db": "ts-node-dev --respawn --transpile-only src/utils/test-connection.ts",
+    "clean-db": "ts-node-dev --respawn --transpile-only src/utils/clean-db.ts",
     "verify-e2e": "ts-node-dev --respawn --transpile-only src/utils/test-e2e.ts",
     "build": "tsc",
     "start": "node dist/server.js"
