@@ -76,6 +76,13 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // 6. Base Routes
+app.get('/', (_req: Request, res: Response): void => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Welcome to the Enterprise Electronics API. Use /api/v1 for endpoints.',
+  });
+});
+
 app.get('/health', (_req: Request, res: Response): void => {
   res.status(200).json({
     status: 'success',
