@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../store';
 import api from '../../services/api';
 import { RefreshCw, X, Send, MessageSquare } from 'lucide-react';
 import { useToast } from '../../utils/ToastContext';
 
 const AdminTickets: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
   const [tickets, setTickets] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
@@ -182,9 +179,8 @@ const AdminTickets: React.FC = () => {
                       </button>
                       <select 
                         value={tck.status} 
-                        disabled={user?.role !== 'admin'}
                         onChange={(e) => handleUpdateStatus(tck._id || tck.id || tck.ticketNumber, e.target.value)}
-                        className={`px-2 py-1 bg-slate-50 dark:bg-primary-600 rounded text-[10px] outline-none border border-slate-200 dark:border-primary-500/20 font-semibold ${user?.role !== 'admin' ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
+                        className="px-2 py-1 bg-slate-50 dark:bg-primary-600 rounded text-[10px] outline-none border border-slate-200 dark:border-primary-500/20 font-semibold"
                       >
                         <option value="open">Open</option>
                         <option value="in-progress">In Progress</option>

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../store';
 import api from '../../services/api';
 import { MOCK_PRODUCTS } from '../../utils/mockData';
 import type { ProductItem } from '../../utils/mockData';
@@ -11,7 +9,6 @@ import { useToast } from '../../utils/ToastContext';
 const GST_SLABS = [0, 5, 12, 18, 28];
 
 const AdminProducts: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
   const [products, setProducts] = useState<ProductItem[]>(MOCK_PRODUCTS);
   const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
@@ -236,14 +233,12 @@ const AdminProducts: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center border-b border-slate-100 dark:border-primary-500 pb-4">
         <h2 className="text-xl font-bold">Product Catalog Manager</h2>
-        {user?.role === 'admin' && (
-          <button
-            onClick={handleOpenCreateModal}
-            className="btn-primary text-xs font-semibold py-2 px-4 flex items-center gap-1"
-          >
-            <Plus size={14} /> Add New Product
-          </button>
-        )}
+        <button
+          onClick={handleOpenCreateModal}
+          className="btn-primary text-xs font-semibold py-2 px-4 flex items-center gap-1"
+        >
+          <Plus size={14} /> Add New Product
+        </button>
       </div>
 
       {isLoading ? (
@@ -296,24 +291,18 @@ const AdminProducts: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 font-bold text-accent-blue">INR {Math.round(mrp).toLocaleString('en-IN')}</td>
                     <td className="px-6 py-4 text-right space-x-2 shrink-0">
-                      {user?.role === 'admin' ? (
-                        <>
-                          <button
-                            onClick={() => handleOpenEditModal(prod)}
-                            className="text-slate-400 hover:text-accent-blue p-1.5 border border-slate-100 dark:border-primary-500 rounded-lg hover:bg-white"
-                          >
-                            <Edit3 size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(prod)}
-                            className="text-slate-300 hover:text-red-500 p-1.5 border border-slate-100 dark:border-primary-500 rounded-lg hover:bg-white"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </>
-                      ) : (
-                        <span className="text-[10px] text-slate-400 italic">Read-Only</span>
-                      )}
+                      <button
+                        onClick={() => handleOpenEditModal(prod)}
+                        className="text-slate-400 hover:text-accent-blue p-1.5 border border-slate-100 dark:border-primary-500 rounded-lg hover:bg-white"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(prod)}
+                        className="text-slate-300 hover:text-red-500 p-1.5 border border-slate-100 dark:border-primary-500 rounded-lg hover:bg-white"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </td>
                   </tr>
                 );
