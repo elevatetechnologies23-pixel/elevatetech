@@ -168,3 +168,19 @@ export const updateSystemSettings = async (req: Request, res: Response, next: Ne
     next(error);
   }
 };
+
+export const getPublicSettings = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const settings = await Settings.find();
+    const settingsMap: Record<string, any> = {};
+    settings.forEach(s => {
+      settingsMap[s.key] = s.value;
+    });
+    res.status(200).json({
+      status: 'success',
+      data: settingsMap
+    });
+  } catch (error) {
+    next(error);
+  }
+};

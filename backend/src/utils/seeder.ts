@@ -7,6 +7,7 @@ import Brand from '../models/Brand';
 import Product from '../models/Product';
 import Coupon from '../models/Coupon';
 import AuditLog from '../models/AuditLog';
+import Settings from '../models/Settings';
 
 // Load Env
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -262,6 +263,22 @@ const seedData = async () => {
       role: 'customer',
       isVerified: true
     });
+
+    // 6. Seed default system settings
+    const defaultSettings = [
+      { key: 'companyName', value: 'Elevate Technology' },
+      { key: 'companyEmail', value: 'info@elevatetechnology.com' },
+      { key: 'companyPhone', value: '+91 98765 43210' },
+      { key: 'companyAddress', value: 'Bengaluru, Karnataka, India' },
+      { key: 'logoUrl', value: '' },
+      { key: 'heroBannerTitle', value: 'B2B Enterprise Electronics Procurement' },
+      { key: 'heroBannerSubtitle', value: 'Streamline hardware procurement, licensing, and IT support' },
+      { key: 'gstPercentage', value: '18' },
+      { key: 'shippingLimit', value: '5000' },
+      { key: 'shippingCharge', value: '150' }
+    ];
+    await Settings.deleteMany({});
+    await Settings.insertMany(defaultSettings);
 
     console.log('Seeding complete! Closing database connection... 🏁');
     await mongoose.connection.close();

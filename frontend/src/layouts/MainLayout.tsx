@@ -19,10 +19,12 @@ import {
   Heart
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
+import { useSettings } from '../utils/SettingsContext';
 import WishlistDrawer from './WishlistDrawer';
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
+  const { settings } = useSettings();
   const dispatch = useDispatch();
 
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
@@ -96,8 +98,21 @@ const MainLayout: React.FC = () => {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-primary-500 dark:text-primary-50">
-            <Laptop className="text-accent-blue" size={24} />
-            <span>Elevate<span className="text-accent-blue">Technology</span></span>
+            {settings.logoUrl ? (
+              <img src={settings.logoUrl} alt={settings.companyName} className="h-8 w-auto object-contain" />
+            ) : (
+              <>
+                <Laptop className="text-accent-blue" size={24} />
+                <span>
+                  {settings.companyName.split(' ')[0]}
+                  {settings.companyName.split(' ').length > 1 && (
+                    <span className="text-accent-blue">
+                      {' ' + settings.companyName.split(' ').slice(1).join(' ')}
+                    </span>
+                  )}
+                </span>
+              </>
+            )}
           </Link>
 
           {/* Desktop Search Bar */}
@@ -285,15 +300,28 @@ const MainLayout: React.FC = () => {
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-lg tracking-tight text-primary-500 dark:text-primary-50">
-              <Laptop className="text-accent-blue" size={20} />
-              <span>Enterprise<span className="text-accent-blue">Electronics</span></span>
+              {settings.logoUrl ? (
+                <img src={settings.logoUrl} alt={settings.companyName} className="h-6 w-auto object-contain" />
+              ) : (
+                <>
+                  <Laptop className="text-accent-blue" size={20} />
+                  <span>
+                    {settings.companyName.split(' ')[0]}
+                    {settings.companyName.split(' ').length > 1 && (
+                      <span className="text-accent-blue">
+                        {' ' + settings.companyName.split(' ').slice(1).join(' ')}
+                      </span>
+                    )}
+                  </span>
+                </>
+              )}
             </Link>
             <p className="text-sm text-slate-400 dark:text-slate-300 leading-relaxed">
               Premium IT infrastructure solutions, advanced CCTV security systems, robust networking setups, and billing automation software for modern enterprises.
             </p>
             <div className="flex flex-col gap-2 text-xs text-slate-400">
-              <span className="flex items-center gap-2"><MapPin size={14} className="text-accent-blue" /> Tech Park Phase 2, Silicon Valley</span>
-              <span className="flex items-center gap-2"><Phone size={14} className="text-accent-blue" /> +91 9673391008</span>
+              <span className="flex items-center gap-2"><MapPin size={14} className="text-accent-blue" /> {settings.companyAddress}</span>
+              <span className="flex items-center gap-2"><Phone size={14} className="text-accent-blue" /> {settings.companyPhone}</span>
             </div>
           </div>
 
@@ -339,7 +367,7 @@ const MainLayout: React.FC = () => {
         </div>
 
         <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-slate-200/50 dark:border-primary-500/20 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
-          <span>&copy; {new Date().getFullYear()} ElevateTechnology. All rights reserved. GSTIN: 29AAAAA0000A1Z5</span>
+          <span>&copy; {new Date().getFullYear()} {settings.companyName}. All rights reserved. GSTIN: 29AAAAA0000A1Z5</span>
           <div className="flex gap-4">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
             <Link to="/terms" className="hover:underline">Terms & Conditions</Link>

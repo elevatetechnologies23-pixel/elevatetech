@@ -7,6 +7,7 @@ import type { ProductItem } from '../utils/mockData';
 import type { RootState } from '../store';
 import { addToWishlist, removeFromWishlist } from '../store/wishlistSlice';
 import { useToast } from '../utils/ToastContext';
+import { useSettings } from '../utils/SettingsContext';
 import {
   Laptop,
   ShieldCheck,
@@ -31,6 +32,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
+  const { settings } = useSettings();
 
   const wishlist = useSelector((state: RootState) => state.wishlist.items);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -66,8 +68,8 @@ const Home: React.FC = () => {
 
   const slides = [
     {
-      title: 'Next-Gen IT Infrastructure Solutions',
-      subtitle: 'Premium Enterprise Computers, Networking & Security Systems',
+      title: settings.heroBannerTitle || 'Next-Gen IT Infrastructure Solutions',
+      subtitle: settings.heroBannerSubtitle || 'Premium Enterprise Computers, Networking & Security Systems',
       cta: 'Explore Catalog',
       link: '/catalog',
       bg: 'bg-gradient-to-r from-slate-900 to-primary-500'
@@ -96,7 +98,7 @@ const Home: React.FC = () => {
           {slides.map((slide, idx) => (
             <div key={idx} className={`w-full h-full shrink-0 flex items-center justify-center text-white p-8 md:p-16 ${slide.bg}`}>
               <div className="max-w-4xl w-full space-y-6 text-left animate-fade-in">
-                <span className="text-xs uppercase tracking-widest text-accent-gold font-bold">Evevate Technology Solutions</span>
+                <span className="text-xs uppercase tracking-widest text-accent-gold font-bold">{settings.companyName} Solutions</span>
                 <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">{slide.title}</h1>
                 <p className="text-sm md:text-lg text-slate-300 max-w-xl">{slide.subtitle}</p>
                 <div className="pt-4 flex gap-4">

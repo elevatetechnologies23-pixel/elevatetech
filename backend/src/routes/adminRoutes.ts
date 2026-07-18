@@ -6,11 +6,15 @@ import {
   getUsers,
   updateEmployeeRole,
   getSystemSettings,
-  updateSystemSettings
+  updateSystemSettings,
+  getPublicSettings
 } from '../controllers/adminController';
 import { protect, restrictTo } from '../middlewares/auth';
 
 const router = Router();
+
+// Public Settings route (unauthenticated)
+router.get('/settings/public', getPublicSettings);
 
 // Admin / Employee shared routes (view stats)
 router.get('/stats', protect, restrictTo('admin', 'employee'), getDashboardStats);
