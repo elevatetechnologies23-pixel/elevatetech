@@ -31,9 +31,40 @@ const AdminTickets: React.FC = () => {
     }
   };
 
+  const reloadTickets = async () => {
+    try {
+      const res = await api.get('/tickets/admin-list');
+      if (res.data?.data) {
+        const updatedList = res.data.data;
+        setTickets(updatedList);
+        // If chat popup is open, update selectedTicket details in real-time
+        if (selectedTicket) {
+          const freshTicket = updatedList.find((t: any) => t.ticketNumber === selectedTicket.ticketNumber);
+          if (freshTicket) {
+            const detailsRes = await api.get(`/tickets/details/${selectedTicket.ticketNumber}`);
+            if (detailsRes.data?.data) {
+              setSelectedTicket(detailsRes.data.data);
+            } else {
+              setSelectedTicket(freshTicket);
+            }
+          }
+        }
+      }
+    } catch {
+      console.warn('API error reloading tickets');
+    }
+  };
+
   useEffect(() => {
     loadTickets();
-  }, []);
+
+    const handleRealtimeUpdate = () => {
+      reloadTickets();
+    };
+
+    window.addEventListener('realtime-ticket-update', handleRealtimeUpdate);
+    return () => window.removeEventListener('realtime-ticket-update', handleRealtimeUpdate);
+  }, [selectedTicket]);
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {

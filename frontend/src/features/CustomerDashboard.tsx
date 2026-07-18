@@ -131,6 +131,16 @@ const CustomerDashboard: React.FC = () => {
 
         // Display toast alert
         toast.info(newNotif.title, newNotif.message);
+
+        // Dispatch custom events based on notification content to sync UI in real-time
+        const titleLower = newNotif.title.toLowerCase();
+        const messageLower = newNotif.message.toLowerCase();
+        if (titleLower.includes('order') || messageLower.includes('order')) {
+          window.dispatchEvent(new CustomEvent('realtime-order-update', { detail: newNotif }));
+        }
+        if (titleLower.includes('ticket') || messageLower.includes('ticket') || titleLower.includes('reply') || messageLower.includes('reply')) {
+          window.dispatchEvent(new CustomEvent('realtime-ticket-update', { detail: newNotif }));
+        }
       } catch (err) {
         console.error('Failed to parse real-time notification:', err);
       }
@@ -170,6 +180,49 @@ const CustomerDashboard: React.FC = () => {
       }
     }
   };
+
+  // Listen for real-time order/ticket updates to refresh dashboard collections in real-time
+  useEffect(() => {
+    const handleOrderUpdate = () => {
+      api.get('/orders/my-orders')
+        .then(res => setOrders(res.data?.data || []))
+        .catch(() => {});
+    };
+
+    const handleTicketUpdate = () => {
+      api.get('/tickets/my-tickets')
+        .then(res => {
+          const updatedTickets = res.data?.data || [];
+          setTickets(updatedTickets);
+          // If the customer currently has a ticket chat thread open, update the chat history live
+          if (selectedTicket) {
+            const freshTicket = updatedTickets.find((t: any) => t.ticketNumber === selectedTicket.ticketNumber);
+            if (freshTicket) {
+              api.get(`/tickets/details/${selectedTicket.ticketNumber}`)
+                .then(detailsRes => {
+                  if (detailsRes.data?.data) {
+                    setSelectedTicket(detailsRes.data.data);
+                  } else {
+                    setSelectedTicket(freshTicket);
+                  }
+                })
+                .catch(() => {
+                  setSelectedTicket(freshTicket);
+                });
+            }
+          }
+        })
+        .catch(() => {});
+    };
+
+    window.addEventListener('realtime-order-update', handleOrderUpdate);
+    window.addEventListener('realtime-ticket-update', handleTicketUpdate);
+
+    return () => {
+      window.removeEventListener('realtime-order-update', handleOrderUpdate);
+      window.removeEventListener('realtime-ticket-update', handleTicketUpdate);
+    };
+  }, [selectedTicket]);
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();

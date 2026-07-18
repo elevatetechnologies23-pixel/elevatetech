@@ -112,6 +112,16 @@ const DashboardLayout: React.FC = () => {
           
           // Display real-time toast notification
           toast.success(newNotif.title, newNotif.message);
+
+          // Dispatch custom events based on notification content to sync UI in real-time
+          const titleLower = newNotif.title.toLowerCase();
+          const messageLower = newNotif.message.toLowerCase();
+          if (titleLower.includes('order') || messageLower.includes('order')) {
+            window.dispatchEvent(new CustomEvent('realtime-order-update', { detail: newNotif }));
+          }
+          if (titleLower.includes('ticket') || messageLower.includes('ticket') || titleLower.includes('reply') || messageLower.includes('reply')) {
+            window.dispatchEvent(new CustomEvent('realtime-ticket-update', { detail: newNotif }));
+          }
         } catch (err) {
           console.error('Failed to parse real-time notification:', err);
         }

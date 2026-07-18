@@ -29,8 +29,26 @@ const AdminOrders: React.FC = () => {
     }
   };
 
+  const reloadOrders = async () => {
+    try {
+      const res = await api.get('/orders/admin-queue');
+      if (res.data?.data) {
+        setOrders(res.data.data);
+      }
+    } catch (err: any) {
+      console.warn('API error reloading orders:', err.message);
+    }
+  };
+
   useEffect(() => {
     loadOrders();
+
+    const handleRealtimeUpdate = () => {
+      reloadOrders();
+    };
+
+    window.addEventListener('realtime-order-update', handleRealtimeUpdate);
+    return () => window.removeEventListener('realtime-order-update', handleRealtimeUpdate);
   }, []);
 
   // ─── Update Order Status ──────────────────────────────────────────────────
