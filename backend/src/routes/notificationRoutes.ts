@@ -4,8 +4,8 @@ import { protect, restrictTo } from '../middlewares/auth';
 
 const router = Router();
 
-// All routes require admin or employee
-router.use(protect, restrictTo('admin', 'employee'));
+// All routes require admin, employee, or customer
+router.use(protect, restrictTo('admin', 'employee', 'customer'));
 
 router.get('/', getNotifications);
 router.get('/stream', streamNotifications);

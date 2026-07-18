@@ -5,7 +5,7 @@ import Coupon from '../models/Coupon';
 import AuditLog from '../models/AuditLog';
 import License from '../models/License';
 import { AppError } from '../app';
-import { notifyAdmins } from '../utils/notifications';
+import { notifyAdmins, notifyUser } from '../utils/notifications';
 
 export const createOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -142,6 +142,14 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
       '/admin/orders'
     );
 
+    // Notify customer about the order creation
+    await notifyUser(
+      req.user?._id,
+      'Order Placed Successfully',
+      `Your order ${order.orderNumber} for INR ${order.grandTotal.toLocaleString('en-IN')} has been placed.`,
+      '/dashboard'
+    );
+
     res.status(201).json({
       status: 'success',
       data: order
@@ -219,6 +227,14 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
       details: `Updated order ${order.orderNumber} status to ${status}`
     });
 
+    // Notify customer about order status change
+    await notifyUser(
+      order.user,
+      'Order Status Updated',
+      `Your order ${order.orderNumber} status has been updated to "${status}".`,
+      '/dashboard'
+    );
+
     res.status(200).json({
       status: 'success',
       data: order
@@ -252,6 +268,14 @@ export const updatePaymentStatus = async (req: Request, res: Response, next: Nex
       action: 'PAYMENT_STATUS_UPDATE',
       details: `Order ${order.orderNumber} payment status changed from "${previousStatus}" → "${paymentStatus}" by admin`
     });
+
+    // Notify customer about payment status update
+    await notifyUser(
+      order.user,
+      'Payment Status Updated',
+      `Your order ${order.orderNumber} payment status has been updated to "${paymentStatus}".`,
+      '/dashboard'
+    );
 
     res.status(200).json({
       status: 'success',

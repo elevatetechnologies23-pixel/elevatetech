@@ -14,7 +14,9 @@ import {
   CheckCircle,
   Clock,
   AlertTriangle,
-  X
+  X,
+  Bell,
+  CheckCheck
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
 
@@ -24,12 +26,14 @@ const CustomerDashboard: React.FC = () => {
   const toast = useToast();
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'orders' | 'licenses' | 'tickets'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'licenses' | 'tickets' | 'notifications'>('orders');
 
   // Content States
   const [orders, setOrders] = useState<any[]>([]);
   const [licenses, setLicenses] = useState<any[]>([]);
   const [tickets, setTickets] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [dataLoading, setDataLoading] = useState(true);
   const [ordersError, setOrdersError] = useState<string | null>(null);
   const [cancelLoading, setCancelLoading] = useState<string | null>(null);
@@ -89,11 +93,83 @@ const CustomerDashboard: React.FC = () => {
         setTickets([]);
       }
 
+      // 4. Fetch Notifications
+      try {
+        const res = await api.get('/notifications');
+        if (res.data?.data) {
+          setNotifications(res.data.data);
+          setUnreadCount(res.data.unreadCount || 0);
+        }
+      } catch {
+        setNotifications([]);
+      }
+
       setDataLoading(false);
     };
 
     fetchData();
   }, [isAuthenticated, ticketSubmitSuccess]);
+
+  // Real-time notifications SSE stream
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    const eventSource = new EventSource(`${API_URL}/notifications/stream?token=${token}`);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const newNotif = JSON.parse(event.data);
+        setNotifications((prev) => {
+          if (prev.some((n) => n._id === newNotif._id)) return prev;
+          return [newNotif, ...prev];
+        });
+        setUnreadCount((prev) => prev + 1);
+
+        // Display toast alert
+        toast.info(newNotif.title, newNotif.message);
+      } catch (err) {
+        console.error('Failed to parse real-time notification:', err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error('Customer SSE Connection Error:', err);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [isAuthenticated]);
+
+  const handleMarkAllNotificationsRead = async () => {
+    try {
+      await api.put('/notifications/mark-all-read');
+      setUnreadCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch {
+      setUnreadCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    }
+  };
+
+  const handleMarkOneNotificationRead = async (id: string, linkUrl?: string) => {
+    try {
+      await api.put(`/notifications/${id}/read`);
+    } catch { /* offline */ }
+    setNotifications(prev => prev.map(n => (n._id || n.id) === id ? { ...n, isRead: true } : n));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+    if (linkUrl) {
+      if (linkUrl.includes('ticket') || linkUrl.includes('support')) {
+        setActiveTab('tickets');
+      } else {
+        setActiveTab('orders');
+      }
+    }
+  };
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -338,24 +414,38 @@ const CustomerDashboard: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-slate-200 dark:border-primary-500 gap-6">
+      <div className="flex border-b border-slate-200 dark:border-primary-500 gap-6 overflow-x-auto">
         <button
           onClick={() => { setActiveTab('orders'); setSelectedTicket(null); }}
-          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none ${activeTab === 'orders' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
+          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none shrink-0 ${activeTab === 'orders' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
         >
           <ShoppingBag size={14} /> My Orders
         </button>
         <button
           onClick={() => { setActiveTab('licenses'); setSelectedTicket(null); }}
-          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none ${activeTab === 'licenses' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
+          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none shrink-0 ${activeTab === 'licenses' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
         >
           <KeyRound size={14} /> Software Licenses
         </button>
         <button
           onClick={() => { setActiveTab('tickets'); }}
-          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none ${activeTab === 'tickets' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
+          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none shrink-0 ${activeTab === 'tickets' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
         >
           <LifeBuoy size={14} /> Support Helpdesk
+        </button>
+        <button
+          onClick={() => { setActiveTab('notifications'); setSelectedTicket(null); }}
+          className={`pb-3 font-bold text-xs flex items-center gap-1.5 transition-colors focus:outline-none shrink-0 ${activeTab === 'notifications' ? 'text-accent-blue border-b-2 border-accent-blue' : 'text-slate-400 hover:text-primary-500'}`}
+        >
+          <div className="relative">
+            <Bell size={14} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-extrabold">
+                {unreadCount}
+              </span>
+            )}
+          </div>
+          Notifications History
         </button>
       </div>
 
@@ -679,6 +769,59 @@ const CustomerDashboard: React.FC = () => {
               )}
             </div>
 
+          </div>
+        )}
+
+        {/* Panel 4: Notifications */}
+        {activeTab === 'notifications' && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-primary-500/20">
+              <h3 className="font-extrabold text-sm text-primary-500 dark:text-primary-50">Notifications History</h3>
+              {unreadCount > 0 && (
+                <button
+                  onClick={handleMarkAllNotificationsRead}
+                  className="text-xs text-accent-blue font-bold hover:underline flex items-center gap-1 bg-transparent border-none outline-none cursor-pointer"
+                >
+                  <CheckCheck size={12} /> Mark All as Read
+                </button>
+              )}
+            </div>
+
+            {notifications.length === 0 ? (
+              <div className="glass-card p-8 text-center space-y-3">
+                <Bell size={32} className="text-slate-300 mx-auto opacity-35" />
+                <p className="text-sm font-bold text-slate-400">No notifications yet</p>
+                <p className="text-xs text-slate-400">Important status updates on your orders and support tickets will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {notifications.map((notif) => (
+                  <div
+                    key={notif._id || notif.id}
+                    onClick={() => handleMarkOneNotificationRead(notif._id || notif.id, notif.linkUrl)}
+                    className={`glass-card p-4 flex items-start gap-4 transition-all cursor-pointer text-left ${!notif.isRead ? 'bg-accent-blue/5 border-l-4 border-l-accent-blue' : 'hover:bg-slate-50 dark:hover:bg-primary-600/20'}`}
+                  >
+                    <div className="mt-0.5 p-1.5 rounded-lg bg-slate-100 dark:bg-primary-600 text-accent-blue">
+                      <Bell size={16} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-4">
+                        <p className={`text-xs font-extrabold ${!notif.isRead ? 'text-primary-500 dark:text-primary-50' : 'text-slate-400'}`}>
+                          {notif.title}
+                        </p>
+                        <span className="text-[9px] text-slate-400">
+                          {new Date(notif.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{notif.message}</p>
+                    </div>
+                    {!notif.isRead && (
+                      <div className="w-2 h-2 rounded-full bg-accent-blue shrink-0 self-center" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

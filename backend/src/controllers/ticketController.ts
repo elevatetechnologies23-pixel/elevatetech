@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import SupportTicket from '../models/SupportTicket';
 import { AppError } from '../app';
-import { notifyAdmins } from '../utils/notifications';
+import { notifyAdmins, notifyUser } from '../utils/notifications';
 
 export const createTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -33,6 +33,14 @@ export const createTicket = async (req: Request, res: Response, next: NextFuncti
       'New Support Ticket',
       `Ticket ${ticketNumber} opened — "${subject}" (${category}, ${priority} priority)`,
       '/admin/tickets'
+    );
+
+    // Notify customer that ticket is opened
+    await notifyUser(
+      req.user?._id,
+      'Support Ticket Opened',
+      `Your support ticket ${ticketNumber} — "${subject}" has been successfully opened.`,
+      '/dashboard'
     );
   } catch (error) {
     next(error);
@@ -108,6 +116,14 @@ export const addTicketMessage = async (req: Request, res: Response, next: NextFu
         `Customer replied on ticket ${ticket.ticketNumber} — "${ticket.subject}"`,
         '/admin/tickets'
       );
+    } else {
+      // Notify customer that staff member replied
+      await notifyUser(
+        ticket.user,
+        'New Response on Support Ticket',
+        `A staff member replied to your support ticket ${ticket.ticketNumber} — "${ticket.subject}"`,
+        '/dashboard'
+      );
     }
 
     res.status(200).json({
@@ -142,6 +158,16 @@ export const updateTicketStatus = async (req: Request, res: Response, next: Next
     if (status) ticket.status = status;
     if (assignedTo) ticket.assignedTo = assignedTo;
     await ticket.save();
+
+    // Notify customer that ticket status is updated
+    if (status) {
+      await notifyUser(
+        ticket.user,
+        'Support Ticket Status Updated',
+        `Your ticket ${ticket.ticketNumber} status has been updated to "${status}".`,
+        '/dashboard'
+      );
+    }
 
     res.status(200).json({
       status: 'success',
