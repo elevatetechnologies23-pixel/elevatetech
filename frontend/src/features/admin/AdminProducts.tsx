@@ -32,6 +32,45 @@ const AdminProducts: React.FC = () => {
   const [newSpecName, setNewSpecName] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
+  const [dbCategories, setDbCategories] = useState<{ _id: string; name: string }[]>([]);
+  const [dbBrands, setDbBrands] = useState<{ _id: string; name: string }[]>([]);
+
+  const DEFAULT_CATEGORIES = ['Laptop', 'CCTV Camera', 'Billing Software', 'Networking', 'Printer', 'RAM'];
+  const DEFAULT_BRANDS = ['Lenovo', 'Hikvision', 'Cisco', 'HP', 'Corsair', 'EnterpriseSoft'];
+
+  const getCategoryOptions = () => {
+    const list = [...dbCategories.map(c => c.name)];
+    DEFAULT_CATEGORIES.forEach(name => {
+      if (!list.includes(name)) list.push(name);
+    });
+    return list;
+  };
+
+  const getBrandOptions = () => {
+    const list = [...dbBrands.map(b => b.name)];
+    DEFAULT_BRANDS.forEach(name => {
+      if (!list.includes(name)) list.push(name);
+    });
+    return list;
+  };
+
+  const loadCategoriesAndBrands = async () => {
+    try {
+      const [catRes, brandRes] = await Promise.all([
+        api.get('/products/categories'),
+        api.get('/products/brands')
+      ]);
+      if (catRes.data?.data) {
+        setDbCategories(catRes.data.data);
+      }
+      if (brandRes.data?.data) {
+        setDbBrands(brandRes.data.data);
+      }
+    } catch (error) {
+      console.warn('Failed to load categories or brands from API, using defaults');
+    }
+  };
+
   const loadProducts = async () => {
     setIsLoading(true);
     try {
@@ -49,6 +88,7 @@ const AdminProducts: React.FC = () => {
 
   useEffect(() => {
     loadProducts();
+    loadCategoriesAndBrands();
   }, []);
 
   const handleAddSpec = () => {
@@ -313,28 +353,22 @@ const AdminProducts: React.FC = () => {
                 <span>Category Name</span>
                 <select
                   value={categoryName} onChange={(e) => setCategoryName(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 rounded-lg outline-none border border-slate-200 dark:border-primary-500 font-semibold text-xs"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 rounded-lg outline-none border border-slate-200 dark:border-primary-500 font-semibold text-xs text-slate-700 dark:text-slate-200"
                 >
-                  <option value="Laptop">Laptop</option>
-                  <option value="CCTV Camera">CCTV Camera</option>
-                  <option value="Billing Software">Billing Software</option>
-                  <option value="Networking">Networking</option>
-                  <option value="Printer">Printer</option>
-                  <option value="RAM">RAM</option>
+                  {getCategoryOptions().map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
                 </select>
               </div>
               <div className="space-y-1">
                 <span>Brand Vendor</span>
                 <select
                   value={brandName} onChange={(e) => setBrandName(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 rounded-lg outline-none border border-slate-200 dark:border-primary-500 font-semibold text-xs"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 rounded-lg outline-none border border-slate-200 dark:border-primary-500 font-semibold text-xs text-slate-700 dark:text-slate-200"
                 >
-                  <option value="Lenovo">Lenovo</option>
-                  <option value="Hikvision">Hikvision</option>
-                  <option value="Cisco">Cisco</option>
-                  <option value="HP">HP</option>
-                  <option value="Corsair">Corsair</option>
-                  <option value="EnterpriseSoft">EnterpriseSoft</option>
+                  {getBrandOptions().map(brnd => (
+                    <option key={brnd} value={brnd}>{brnd}</option>
+                  ))}
                 </select>
               </div>
 

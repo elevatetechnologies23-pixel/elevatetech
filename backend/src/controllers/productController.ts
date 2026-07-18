@@ -285,7 +285,25 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
 
 export const updateProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+
+    if (req.body.categoryName) {
+      let category = await Category.findOne({ name: req.body.categoryName });
+      if (!category) {
+        category = await Category.create({ name: req.body.categoryName, slug: slugify(req.body.categoryName) });
+      }
+      updateData.category = category._id;
+    }
+
+    if (req.body.brandName) {
+      let brand = await Brand.findOne({ name: req.body.brandName });
+      if (!brand) {
+        brand = await Brand.create({ name: req.body.brandName, slug: slugify(req.body.brandName) });
+      }
+      updateData.brand = brand._id;
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true
     });
