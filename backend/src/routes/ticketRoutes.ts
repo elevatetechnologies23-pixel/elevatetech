@@ -19,6 +19,6 @@ router.post('/details/:ticketNumber/messages', protect, addTicketMessage);
 
 // Admin / Employee helpdesk routes
 router.get('/admin-list', protect, restrictTo('admin', 'employee'), getAdminTickets);
-router.put('/:id/status', protect, restrictTo('admin', 'employee'), updateTicketStatus);
+router.put('/:id/status', protect, restrictTo('admin'), updateTicketStatus);
 
 export default router;

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store';
 import api from '../../services/api';
 import { RefreshCw, CheckCircle, AlertTriangle, CreditCard } from 'lucide-react';
 import { useToast } from '../../utils/ToastContext';
@@ -7,6 +9,7 @@ const PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded', 'partially_pa
 const ORDER_STATUSES = ['placed', 'processing', 'shipped', 'delivered', 'cancelled'];
 
 const AdminOrders: React.FC = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updateMsg, setUpdateMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -223,9 +226,9 @@ const AdminOrders: React.FC = () => {
                     <td className="px-5 py-4 text-right">
                       <select
                         value={ord.orderStatus}
-                        disabled={isUpdating}
+                        disabled={isUpdating || user?.role !== 'admin'}
                         onChange={(e) => handleUpdateStatus(ord, e.target.value)}
-                        className={`px-2 py-1.5 bg-slate-50 dark:bg-primary-600 rounded-lg text-[10px] outline-none border border-slate-200 dark:border-primary-500 font-semibold cursor-pointer transition-opacity ${isUpdating ? 'opacity-50 cursor-wait' : ''}`}
+                        className={`px-2 py-1.5 bg-slate-50 dark:bg-primary-600 rounded-lg text-[10px] outline-none border border-slate-200 dark:border-primary-500 font-semibold cursor-pointer transition-opacity ${isUpdating ? 'opacity-50 cursor-wait' : ''} ${user?.role !== 'admin' ? 'cursor-not-allowed opacity-75' : ''}`}
                       >
                         {ORDER_STATUSES.map(s => (
                           <option key={s} value={s} className="capitalize">{s.charAt(0).toUpperCase() + s.slice(1)}</option>
@@ -239,10 +242,12 @@ const AdminOrders: React.FC = () => {
                         <CreditCard size={11} className="text-slate-400" />
                         <select
                           value={ord.paymentStatus}
-                          disabled={isUpdatingPay}
+                          disabled={isUpdatingPay || user?.role !== 'admin'}
                           onChange={(e) => handleUpdatePaymentStatus(ord, e.target.value)}
                           className={`px-2 py-1.5 rounded-lg text-[10px] outline-none border font-semibold cursor-pointer transition-all ${
                             isUpdatingPay ? 'opacity-50 cursor-wait' : ''
+                          } ${
+                            user?.role !== 'admin' ? 'cursor-not-allowed opacity-75' : ''
                           } ${
                             ord.paymentStatus === 'paid'
                               ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700 text-green-600'

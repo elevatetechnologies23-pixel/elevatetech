@@ -24,7 +24,7 @@ router.get('/invoice/:orderNumber/download', protect, downloadInvoice);
 
 // Admin/Employee dashboard routes
 router.get('/admin-queue', protect, restrictTo('admin', 'employee'), getAdminOrders);
-router.put('/:id/status', protect, restrictTo('admin', 'employee'), updateOrderStatus);
-router.put('/:id/payment-status', protect, restrictTo('admin', 'employee'), updatePaymentStatus);
+router.put('/:id/status', protect, restrictTo('admin'), updateOrderStatus);
+router.put('/:id/payment-status', protect, restrictTo('admin'), updatePaymentStatus);
 
 export default router;
