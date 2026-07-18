@@ -38,7 +38,7 @@ const EmployeeLogin: React.FC = () => {
         navigate('/employee');
       }
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'Invalid staff credentials.';
+      const errMsg = err.message || err.response?.data?.message || 'Invalid staff credentials.';
       setLoginError(errMsg);
       dispatch(authFailure(errMsg));
     }

@@ -35,8 +35,9 @@ const AdminRegister: React.FC = () => {
         navigate('/admin');
       }
     } catch (err: any) {
-      setRegisterError(err.response?.data?.message || 'Admin registration failed. Please try again.');
-      dispatch(authFailure(err.response?.data?.message || 'Registration failed'));
+      const errMsg = err.message || err.response?.data?.message || 'Admin registration failed. Please try again.';
+      setRegisterError(errMsg);
+      dispatch(authFailure(errMsg));
     }
   };
 

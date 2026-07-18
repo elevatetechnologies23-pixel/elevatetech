@@ -45,7 +45,7 @@ const Register: React.FC = () => {
         navigate('/');
       }
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Registration failed. Please check your details.';
+      const msg = err.message || err.response?.data?.message || 'Registration failed. Please check your details.';
       setRegisterError(msg);
       toast.error('Registration Failed', msg);
     }

@@ -35,8 +35,9 @@ const EmployeeRegister: React.FC = () => {
         navigate('/employee');
       }
     } catch (err: any) {
-      setRegisterError(err.response?.data?.message || 'Staff registration failed. Please try again.');
-      dispatch(authFailure(err.response?.data?.message || 'Registration failed'));
+      const errMsg = err.message || err.response?.data?.message || 'Staff registration failed. Please try again.';
+      setRegisterError(errMsg);
+      dispatch(authFailure(errMsg));
     }
   };
 

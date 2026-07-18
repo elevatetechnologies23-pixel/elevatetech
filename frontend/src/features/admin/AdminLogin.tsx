@@ -38,7 +38,7 @@ const AdminLogin: React.FC = () => {
         navigate('/admin');
       }
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'Invalid administrator credentials.';
+      const errMsg = err.message || err.response?.data?.message || 'Invalid administrator credentials.';
       setLoginError(errMsg);
       dispatch(authFailure(errMsg));
     }
