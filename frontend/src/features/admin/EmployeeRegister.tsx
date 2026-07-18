@@ -105,7 +105,7 @@ const EmployeeRegister: React.FC = () => {
         </form>
 
         <div className="text-center text-[10px] text-slate-500">
-          Already have an account? <Link to="/employee/login" className="text-accent-gold font-bold hover:underline">Sign In here</Link>
+          Already have an account? <Link to="/secure/portal/staff-auth-1z56" className="text-accent-gold font-bold hover:underline">Sign In here</Link>
         </div>
 
       </div>

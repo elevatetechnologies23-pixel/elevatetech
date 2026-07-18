@@ -105,7 +105,7 @@ const AdminRegister: React.FC = () => {
         </form>
 
         <div className="text-center text-[10px] text-slate-500">
-          Already have an account? <Link to="/admin/login" className="text-red-500 font-bold hover:underline">Sign In here</Link>
+          Already have an account? <Link to="/secure/portal/admin-auth-9x27" className="text-red-500 font-bold hover:underline">Sign In here</Link>
         </div>
 
       </div>

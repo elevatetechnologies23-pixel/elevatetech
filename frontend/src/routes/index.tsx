@@ -83,10 +83,10 @@ const AppRoutes: React.FC = () => {
       </Route>
 
       {/* Dedicated Portal Logins & Registrations */}
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/register" element={<AdminRegister />} />
-      <Route path="/employee/login" element={<EmployeeLogin />} />
-      <Route path="/employee/register" element={<EmployeeRegister />} />
+      <Route path="/secure/portal/admin-auth-9x27" element={<AdminLogin />} />
+      <Route path="/secure/portal/admin-create-4y81" element={<AdminRegister />} />
+      <Route path="/secure/portal/staff-auth-1z56" element={<EmployeeLogin />} />
+      <Route path="/secure/portal/staff-create-3w82" element={<EmployeeRegister />} />
 
       {/* 2. Admin Portal routes */}
       <Route 

@@ -99,7 +99,7 @@ const AdminLogin: React.FC = () => {
         </form>
 
         <div className="text-center text-[10px] text-slate-500 space-y-1">
-          <p>Don't have an admin account? <Link to="/admin/register" className="text-red-500 font-bold hover:underline">Register here</Link></p>
+          <p>Don't have an admin account? <Link to="/secure/portal/admin-create-4y81" className="text-red-500 font-bold hover:underline">Register here</Link></p>
           <p><Link to="/login" className="hover:underline hover:text-slate-400">Back to Public Site</Link></p>
         </div>
 
