@@ -107,18 +107,8 @@ const Login: React.FC = () => {
         </button>
       </form>
 
-      <div className="text-center text-[11px] text-slate-400 space-y-4">
-        <div>
-          Don't have an account? <Link to="/register" className="text-accent-blue font-bold hover:underline">Register here</Link>
-        </div>
-        <div className="pt-4 border-t border-slate-200/50 dark:border-primary-500/20 text-center space-y-1 text-[10px] text-slate-500 dark:text-slate-400">
-          <p className="font-semibold uppercase tracking-wider text-[9px] text-slate-400">Portals</p>
-          <div className="flex justify-center gap-4">
-            <Link to="/admin/login" className="hover:text-accent-blue transition-colors font-semibold">Admin Login</Link>
-            <span>•</span>
-            <Link to="/employee/login" className="hover:text-accent-blue transition-colors font-semibold">Staff Login</Link>
-          </div>
-        </div>
+      <div className="text-center text-[11px] text-slate-400">
+        Don't have an account? <Link to="/register" className="text-accent-blue font-bold hover:underline">Register here</Link>
       </div>
     </div>
   );

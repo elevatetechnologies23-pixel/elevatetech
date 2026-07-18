@@ -340,12 +340,9 @@ const MainLayout: React.FC = () => {
 
         <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-slate-200/50 dark:border-primary-500/20 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
           <span>&copy; {new Date().getFullYear()} ElevateTechnology. All rights reserved. GSTIN: 29AAAAA0000A1Z5</span>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
             <Link to="/terms" className="hover:underline">Terms & Conditions</Link>
-            <span className="text-slate-300 dark:text-primary-500">|</span>
-            <Link to="/admin/login" className="hover:text-accent-blue transition-colors font-semibold">Admin Portal</Link>
-            <Link to="/employee/login" className="hover:text-accent-gold transition-colors font-semibold">Staff Portal</Link>
           </div>
         </div>
       </footer>
