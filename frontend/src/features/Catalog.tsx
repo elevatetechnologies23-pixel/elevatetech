@@ -27,6 +27,49 @@ const Catalog: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  const [dbCategories, setDbCategories] = useState<{ _id: string; name: string }[]>([]);
+  const [dbBrands, setDbBrands] = useState<{ _id: string; name: string }[]>([]);
+
+  const DEFAULT_CATEGORIES = ['Laptop', 'CCTV Camera', 'Billing Software', 'Networking', 'Printer', 'RAM'];
+  const DEFAULT_BRANDS = ['Lenovo', 'Hikvision', 'Cisco', 'HP', 'Corsair', 'EnterpriseSoft'];
+
+  const getCategoryOptions = () => {
+    const list = [...dbCategories.map(c => c.name)];
+    DEFAULT_CATEGORIES.forEach(name => {
+      if (!list.includes(name)) list.push(name);
+    });
+    return list;
+  };
+
+  const getBrandOptions = () => {
+    const list = [...dbBrands.map(b => b.name)];
+    DEFAULT_BRANDS.forEach(name => {
+      if (!list.includes(name)) list.push(name);
+    });
+    return list;
+  };
+
+  // Fetch categories and brands from database on mount
+  useEffect(() => {
+    const loadFilters = async () => {
+      try {
+        const [catRes, brandRes] = await Promise.all([
+          api.get('/products/categories'),
+          api.get('/products/brands')
+        ]);
+        if (catRes.data?.data) {
+          setDbCategories(catRes.data.data);
+        }
+        if (brandRes.data?.data) {
+          setDbBrands(brandRes.data.data);
+        }
+      } catch (err) {
+        console.warn('Failed to load categories or brands from API, using defaults');
+      }
+    };
+    loadFilters();
+  }, []);
+
   const isInWishlist = (id: string) => wishlist.some(item => (item.id || (item as any)._id) === id);
 
   const toggleWishlist = (e: React.MouseEvent, prod: ProductItem) => {
@@ -260,15 +303,12 @@ const Catalog: React.FC = () => {
               <select 
                 value={selectedCategory} 
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg outline-none border-none font-medium"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg outline-none border-none font-medium text-slate-700 dark:text-slate-200"
               >
                 <option value="">All Categories</option>
-                <option value="Laptop">Laptops & Computers</option>
-                <option value="CCTV Camera">CCTV Camera Solutions</option>
-                <option value="Billing Software">Billing Software Modules</option>
-                <option value="Networking">Networking Equipment</option>
-                <option value="Printer">Printers & Accessories</option>
-                <option value="RAM">Computer Memory (RAM)</option>
+                {getCategoryOptions().map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
 
@@ -278,15 +318,12 @@ const Catalog: React.FC = () => {
               <select 
                 value={selectedBrand} 
                 onChange={(e) => setSelectedBrand(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg outline-none border-none font-medium"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg outline-none border-none font-medium text-slate-700 dark:text-slate-200"
               >
                 <option value="">All Brands</option>
-                <option value="Lenovo">Lenovo</option>
-                <option value="Hikvision">Hikvision</option>
-                <option value="Cisco">Cisco Systems</option>
-                <option value="HP">HP</option>
-                <option value="Corsair">Corsair</option>
-                <option value="EnterpriseSoft">EnterpriseSoft</option>
+                {getBrandOptions().map(brnd => (
+                  <option key={brnd} value={brnd}>{brnd}</option>
+                ))}
               </select>
             </div>
 
