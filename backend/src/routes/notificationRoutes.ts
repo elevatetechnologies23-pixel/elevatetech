@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getNotifications, markAllRead, markOneRead } from '../controllers/notificationController';
+import { getNotifications, markAllRead, markOneRead, streamNotifications } from '../controllers/notificationController';
 import { protect, restrictTo } from '../middlewares/auth';
 
 const router = Router();
@@ -8,6 +8,7 @@ const router = Router();
 router.use(protect, restrictTo('admin', 'employee'));
 
 router.get('/', getNotifications);
+router.get('/stream', streamNotifications);
 router.put('/mark-all-read', markAllRead);
 router.put('/:id/read', markOneRead);
 

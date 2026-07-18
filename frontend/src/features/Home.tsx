@@ -343,7 +343,7 @@ const Home: React.FC = () => {
               <Star size={16} className="fill-current" />
             </div>
             <p className="text-xs text-slate-400 dark:text-slate-300 italic">
-              "Outstanding procurement experience. Ordered 15 ThinkPad laptops and Cisco switches. The bulk pricing discount we received was unmatched. Standardizing on Evaluate Technology."
+              "Outstanding procurement experience. Ordered 15 ThinkPad laptops and Cisco switches. The bulk pricing discount we received was unmatched. Standardizing on Elevate Technology."
             </p>
             <div>
               <p className="font-bold text-xs">Arjun Patel</p>

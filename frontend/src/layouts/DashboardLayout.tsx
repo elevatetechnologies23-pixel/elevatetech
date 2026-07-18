@@ -5,6 +5,7 @@ import type { RootState } from '../store';
 import { logout } from '../store/authSlice';
 import { toggleTheme } from '../store/themeSlice';
 import api from '../services/api';
+import { useToast } from '../utils/ToastContext';
 import {
   LayoutDashboard,
   Box,
@@ -33,6 +34,7 @@ const DashboardLayout: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const toast = useToast();
   
   const { user } = useSelector((state: RootState) => state.auth);
   const { mode } = useSelector((state: RootState) => state.theme);
@@ -92,9 +94,36 @@ const DashboardLayout: React.FC = () => {
   useEffect(() => {
     if (user?.role === 'admin' || user?.role === 'employee') {
       loadNotifications();
-      // Poll every 30 seconds for new notifications
-      const interval = setInterval(loadNotifications, 30000);
-      return () => clearInterval(interval);
+
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+      const eventSource = new EventSource(`${API_URL}/notifications/stream?token=${token}`);
+
+      eventSource.onmessage = (event) => {
+        try {
+          const newNotif = JSON.parse(event.data);
+          setNotifications((prev) => {
+            if (prev.some((n) => n._id === newNotif._id)) return prev;
+            return [newNotif, ...prev];
+          });
+          setUnreadCount((prev) => prev + 1);
+          
+          // Display real-time toast notification
+          toast.success(newNotif.title, newNotif.message);
+        } catch (err) {
+          console.error('Failed to parse real-time notification:', err);
+        }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error('SSE Connection Error:', err);
+      };
+
+      return () => {
+        eventSource.close();
+      };
     }
   }, [user?.role]);
 
