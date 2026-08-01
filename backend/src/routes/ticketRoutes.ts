@@ -5,7 +5,8 @@ import {
   getTicketDetails, 
   addTicketMessage, 
   getAdminTickets, 
-  updateTicketStatus 
+  updateTicketStatus,
+  deleteTicket
 } from '../controllers/ticketController';
 import { protect, restrictTo } from '../middlewares/auth';
 
@@ -20,5 +21,6 @@ router.post('/details/:ticketNumber/messages', protect, addTicketMessage);
 // Admin / Employee helpdesk routes
 router.get('/admin-list', protect, restrictTo('admin', 'employee'), getAdminTickets);
 router.put('/:id/status', protect, restrictTo('admin', 'employee'), updateTicketStatus);
+router.delete('/:id', protect, restrictTo('admin', 'employee'), deleteTicket);
 
 export default router;

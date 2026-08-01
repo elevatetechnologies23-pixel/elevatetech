@@ -149,14 +149,18 @@ export const getAdminTickets = async (_req: Request, res: Response, next: NextFu
 
 export const updateTicketStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { status, assignedTo } = req.body;
-    const ticket = await SupportTicket.findById(req.params.id);
+    const { status, assignedTo, priority, category } = req.body;
+    const ticket = await SupportTicket.findOne({
+      $or: [{ _id: req.params.id }, { ticketNumber: req.params.id }]
+    });
     if (!ticket) {
       return next(new AppError('Ticket not found', 404));
     }
 
     if (status) ticket.status = status;
     if (assignedTo) ticket.assignedTo = assignedTo;
+    if (priority) ticket.priority = priority;
+    if (category) ticket.category = category;
     await ticket.save();
 
     // Notify customer that ticket status is updated
@@ -177,3 +181,22 @@ export const updateTicketStatus = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+
+export const deleteTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const ticket = await SupportTicket.findOneAndDelete({
+      $or: [{ _id: req.params.id }, { ticketNumber: req.params.id }]
+    });
+    if (!ticket) {
+      return next(new AppError('Ticket not found', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

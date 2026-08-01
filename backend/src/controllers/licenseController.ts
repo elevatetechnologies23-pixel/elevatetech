@@ -104,6 +104,93 @@ export const updateLicenseStatus = async (req: Request, res: Response, next: Nex
   }
 };
 
+export const createLicense = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { productName, assignedTo, maxActivations, validUntil, status } = req.body;
+    
+    // Auto generate key: LIC-XXXX-XXXX-XXXX-XXXX
+    const randomHex = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+    const licenseKey = `LIC-${randomHex()}-${randomHex()}-${randomHex()}-${randomHex()}`;
+
+    const license = await License.create({
+      licenseKey,
+      productName: productName || 'Enterprise Billing & POS Software',
+      assignedTo: assignedTo || req.user?._id,
+      maxActivations: Number(maxActivations) || 3,
+      activeActivations: 0,
+      macAddresses: [],
+      status: status || 'active',
+      validUntil: validUntil ? new Date(validUntil) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+    });
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'LICENSE_CREATE',
+      details: `Created license key ${license.licenseKey} for ${license.productName}`
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: license
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateLicense = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { productName, maxActivations, validUntil, status, assignedTo } = req.body;
+    const license = await License.findById(req.params.id);
+    if (!license) {
+      return next(new AppError('License not found', 404));
+    }
+
+    if (productName) license.productName = productName;
+    if (maxActivations !== undefined) license.maxActivations = maxActivations;
+    if (validUntil) license.validUntil = new Date(validUntil);
+    if (status) license.status = status;
+    if (assignedTo) license.assignedTo = assignedTo;
+
+    await license.save();
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'LICENSE_UPDATE',
+      details: `Updated license ${license.licenseKey}`
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: license
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteLicense = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const license = await License.findByIdAndDelete(req.params.id);
+    if (!license) {
+      return next(new AppError('License not found', 404));
+    }
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'LICENSE_DELETE',
+      details: `Deleted license ${license.licenseKey}`
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deactivateMacAddress = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { macAddress } = req.body;
@@ -113,9 +200,9 @@ export const deactivateMacAddress = async (req: Request, res: Response, next: Ne
       return next(new AppError('MAC address is required to deactivate', 400));
     }
 
-    const license = await License.findOne({ _id: licenseId, assignedTo: req.user?._id });
+    const license = await License.findOne({ _id: licenseId });
     if (!license) {
-      return next(new AppError('License not found or access denied', 404));
+      return next(new AppError('License not found', 404));
     }
 
     const index = license.macAddresses.indexOf(macAddress);
@@ -143,3 +230,4 @@ export const deactivateMacAddress = async (req: Request, res: Response, next: Ne
     next(error);
   }
 };
+

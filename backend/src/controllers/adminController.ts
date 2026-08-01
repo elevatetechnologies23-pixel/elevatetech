@@ -91,12 +91,82 @@ export const getEmployees = async (_req: Request, res: Response, next: NextFunct
   }
 };
 
+export const createEmployee = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, email, password, role, phone } = req.body;
+    if (!name || !email || !password) {
+      return next(new AppError('Name, email, and password are required', 400));
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return next(new AppError('User with this email already exists', 400));
+    }
+
+    const employee = await User.create({
+      name,
+      email,
+      password,
+      role: role || 'employee',
+      phone,
+      isVerified: true
+    });
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'EMPLOYEE_CREATE',
+      details: `Created staff member ${employee.name} (${employee.email}) with role ${employee.role}`
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: { _id: employee._id, name: employee.name, email: employee.email, role: employee.role, phone: employee.phone }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getUsers = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.status(200).json({
       status: 'success',
       data: users
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, email, password, role, phone, isVerified } = req.body;
+    if (!name || !email || !password) {
+      return next(new AppError('Name, email, and password are required', 400));
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return next(new AppError('User with this email already exists', 400));
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: role || 'customer',
+      phone,
+      isVerified: isVerified !== undefined ? isVerified : true
+    });
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'USER_CREATE',
+      details: `Created user ${user.name} (${user.email})`
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, isVerified: user.isVerified }
     });
   } catch (error) {
     next(error);
@@ -132,6 +202,60 @@ export const updateEmployeeRole = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+
+export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, email, phone, role, isVerified } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone !== undefined) user.phone = phone;
+    if (role) user.role = role;
+    if (isVerified !== undefined) user.isVerified = isVerified;
+
+    await user.save();
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'USER_UPDATE',
+      details: `Updated user account ${user.email}`
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'USER_DELETE',
+      details: `Deleted user account ${user.email}`
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 export const getSystemSettings = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

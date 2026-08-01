@@ -44,6 +44,39 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+export const updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, description, parentId } = req.body;
+    const updateData: any = {};
+    if (name) {
+      updateData.name = name;
+      updateData.slug = slugify(name);
+    }
+    if (description !== undefined) updateData.description = description;
+    if (parentId !== undefined) updateData.parentId = parentId || null;
+
+    const category = await Category.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+    if (!category) {
+      return next(new AppError('Category not found', 404));
+    }
+    res.status(200).json({ status: 'success', data: category });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category) {
+      return next(new AppError('Category not found', 404));
+    }
+    res.status(200).json({ status: 'success', data: null });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getBrands = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const brands = await Brand.find();
@@ -67,6 +100,40 @@ export const createBrand = async (req: Request, res: Response, next: NextFunctio
     next(error);
   }
 };
+
+export const updateBrand = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, logoUrl, description } = req.body;
+    const updateData: any = {};
+    if (name) {
+      updateData.name = name;
+      updateData.slug = slugify(name);
+    }
+    if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+    if (description !== undefined) updateData.description = description;
+
+    const brand = await Brand.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+    if (!brand) {
+      return next(new AppError('Brand not found', 404));
+    }
+    res.status(200).json({ status: 'success', data: brand });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteBrand = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const brand = await Brand.findByIdAndDelete(req.params.id);
+    if (!brand) {
+      return next(new AppError('Brand not found', 404));
+    }
+    res.status(200).json({ status: 'success', data: null });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 // -------------------------------------------------------------
 // PRODUCTS CONTROLLERS
