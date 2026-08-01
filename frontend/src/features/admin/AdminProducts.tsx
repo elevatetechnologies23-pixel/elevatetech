@@ -246,8 +246,8 @@ const AdminProducts: React.FC = () => {
           <div className="w-10 h-10 border-4 border-accent-blue border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
-        <div className="glass-card overflow-hidden">
-          <table className="w-full text-xs text-left">
+        <div className="glass-card overflow-x-auto">
+          <table className="w-full text-xs text-left min-w-[700px]">
             <thead>
               <tr className="border-b border-slate-100 dark:border-primary-500 bg-slate-50 dark:bg-primary-700/50">
                 <th className="px-6 py-4 font-bold text-slate-400">Product Name</th>

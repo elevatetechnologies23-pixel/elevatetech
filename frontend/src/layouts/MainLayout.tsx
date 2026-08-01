@@ -257,11 +257,13 @@ const MainLayout: React.FC = () => {
               </button>
             </form>
 
-            <nav className="flex flex-col gap-3 font-medium">
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue">Home</Link>
-              <Link to="/catalog" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue">Shop Products</Link>
-              <Link to="/billing-software" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue">Billing Software</Link>
-              <Link to="/corporate-enquiry" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue">Corporate enquiry</Link>
+            <nav className="flex flex-col gap-3 font-semibold text-sm">
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue py-1">Home</Link>
+              <Link to="/catalog" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue py-1">Shop Products & Catalog</Link>
+              <Link to="/videos" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue text-accent-blue font-extrabold flex items-center gap-1.5 py-1"><Tv size={16} /> Video Demos & Showcase</Link>
+              <Link to="/billing-software" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue text-accent-gold font-bold py-1">Billing Software</Link>
+              <Link to="/corporate-enquiry" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue py-1">Corporate Enquiry</Link>
+              <Link to="/compare" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent-blue py-1">Compare Products</Link>
 
               <hr className="border-slate-200 dark:border-primary-500" />
 

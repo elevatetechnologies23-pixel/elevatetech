@@ -267,7 +267,7 @@ const AdminLicenses: React.FC = () => {
       ) : (
         <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full text-xs text-left min-w-[800px]">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-primary-500 bg-slate-50 dark:bg-primary-700/50">
                   <th className="px-6 py-4 font-bold text-slate-400">License Key</th>
