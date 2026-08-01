@@ -5,6 +5,7 @@ import type { RootState } from '../../store';
 import { authStart, authSuccess, authFailure } from '../../store/authSlice';
 import api from '../../services/api';
 import { Briefcase, Lock, Mail, LogIn } from 'lucide-react';
+import Logo from '../../components/Logo';
 
 const EmployeeLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -51,11 +52,14 @@ const EmployeeLogin: React.FC = () => {
         {/* Top visual indicator */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-accent-gold to-yellow-500"></div>
 
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-accent-gold/10 text-accent-gold flex items-center justify-center mx-auto mb-2">
-            <Briefcase size={24} />
+        <div className="text-center space-y-3">
+          <div className="flex justify-center pb-1">
+            <Logo size="lg" lightOnly={true} />
           </div>
-          <h2 className="text-xl font-extrabold tracking-tight text-white">Employee & Staff Portal</h2>
+          <div className="w-10 h-10 rounded-2xl bg-accent-gold/10 text-accent-gold flex items-center justify-center mx-auto">
+            <Briefcase size={22} />
+          </div>
+          <h2 className="text-lg font-extrabold tracking-tight text-white">Employee & Staff Portal</h2>
           <p className="text-[11px] text-slate-400">Log in to manage catalog specs, support tickets, and client orders.</p>
         </div>
 

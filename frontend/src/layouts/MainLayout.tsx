@@ -15,12 +15,12 @@ import {
   Phone,
   Mail,
   MapPin,
-  Laptop,
   Heart
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
 import { useSettings } from '../utils/SettingsContext';
 import WishlistDrawer from './WishlistDrawer';
+import Logo from '../components/Logo';
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -97,22 +97,8 @@ const MainLayout: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-primary-500 dark:text-primary-50">
-            {settings.logoUrl ? (
-              <img src={settings.logoUrl} alt={settings.companyName} className="h-8 w-auto object-contain" />
-            ) : (
-              <>
-                <Laptop className="text-accent-blue" size={24} />
-                <span>
-                  {settings.companyName.split(' ')[0]}
-                  {settings.companyName.split(' ').length > 1 && (
-                    <span className="text-accent-blue">
-                      {' ' + settings.companyName.split(' ').slice(1).join(' ')}
-                    </span>
-                  )}
-                </span>
-              </>
-            )}
+          <Link to="/" className="flex items-center">
+            <Logo size="md" />
           </Link>
 
           {/* Desktop Search Bar */}
@@ -299,22 +285,8 @@ const MainLayout: React.FC = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 font-bold text-lg tracking-tight text-primary-500 dark:text-primary-50">
-              {settings.logoUrl ? (
-                <img src={settings.logoUrl} alt={settings.companyName} className="h-6 w-auto object-contain" />
-              ) : (
-                <>
-                  <Laptop className="text-accent-blue" size={20} />
-                  <span>
-                    {settings.companyName.split(' ')[0]}
-                    {settings.companyName.split(' ').length > 1 && (
-                      <span className="text-accent-blue">
-                        {' ' + settings.companyName.split(' ').slice(1).join(' ')}
-                      </span>
-                    )}
-                  </span>
-                </>
-              )}
+            <Link to="/" className="flex items-center">
+              <Logo size="md" showTagline={true} />
             </Link>
             <p className="text-sm text-slate-400 dark:text-slate-300 leading-relaxed">
               Premium IT infrastructure solutions, advanced CCTV security systems, robust networking setups, and billing automation software for modern enterprises.

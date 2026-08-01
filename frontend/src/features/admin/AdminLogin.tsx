@@ -5,6 +5,7 @@ import type { RootState } from '../../store';
 import { authStart, authSuccess, authFailure } from '../../store/authSlice';
 import api from '../../services/api';
 import { ShieldAlert, Lock, Mail, LogIn } from 'lucide-react';
+import Logo from '../../components/Logo';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -51,11 +52,14 @@ const AdminLogin: React.FC = () => {
         {/* Top visual indicator */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
 
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-2">
-            <ShieldAlert size={26} />
+        <div className="text-center space-y-3">
+          <div className="flex justify-center pb-1">
+            <Logo size="lg" lightOnly={true} />
           </div>
-          <h2 className="text-xl font-extrabold tracking-tight text-white">Administrator Secure Portal</h2>
+          <div className="w-10 h-10 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mx-auto">
+            <ShieldAlert size={22} />
+          </div>
+          <h2 className="text-lg font-extrabold tracking-tight text-white">Administrator Secure Portal</h2>
           <p className="text-[11px] text-slate-400">Authorized personnel only. All access attempts are logged and monitored.</p>
         </div>
 

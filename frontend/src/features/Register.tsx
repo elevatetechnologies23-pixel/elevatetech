@@ -6,6 +6,7 @@ import { authStart, authSuccess } from '../store/authSlice';
 import api from '../services/api';
 import { User as UserIcon, Mail, Lock, Smartphone, UserPlus } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
+import Logo from '../components/Logo';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -52,9 +53,12 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-16 p-8 glass-card space-y-6 animate-fade-in">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Create an Account</h2>
+    <div className="max-w-md mx-auto my-16 p-8 glass-card space-y-6 animate-fade-in text-center">
+      <div className="flex justify-center pb-2">
+        <Logo size="lg" showTagline={true} />
+      </div>
+      <div className="text-center space-y-1">
+        <h2 className="text-xl font-bold tracking-tight">Create an Account</h2>
         <p className="text-xs text-slate-400">Join our platform as a retail buyer or corporate customer.</p>
       </div>
 

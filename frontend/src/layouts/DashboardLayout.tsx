@@ -6,6 +6,7 @@ import { logout } from '../store/authSlice';
 import { toggleTheme } from '../store/themeSlice';
 import api from '../services/api';
 import { useToast } from '../utils/ToastContext';
+import Logo from '../components/Logo';
 import {
   LayoutDashboard,
   Box,
@@ -195,9 +196,11 @@ const DashboardLayout: React.FC = () => {
         <div>
           {/* Logo & Header */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/50 dark:border-primary-500/20">
-            <Link to="/" className="flex items-center gap-2 font-bold tracking-tight">
-              <Box className="text-accent-blue" size={22} />
-              <span>{user?.role === 'admin' ? 'Admin' : 'Staff'} <span className="text-accent-blue">Panel</span></span>
+            <Link to="/" className="flex items-center gap-2">
+              <Logo size="sm" />
+              <span className="text-[10px] font-bold bg-accent-blue/10 text-accent-blue px-2 py-0.5 rounded-full uppercase ml-1">
+                {user?.role === 'admin' ? 'Admin' : 'Staff'}
+              </span>
             </Link>
             <button 
               onClick={() => setSidebarOpen(false)}
