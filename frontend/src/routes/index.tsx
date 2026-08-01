@@ -16,6 +16,7 @@ import CheckoutPage from '../features/CheckoutPage';
 import CorporateEnquiry from '../features/CorporateEnquiry';
 import CompareProducts from '../features/CompareProducts';
 import BillingSoftwarePage from '../features/BillingSoftwarePage';
+import VideoGallery from '../features/VideoGallery';
 import Login from '../features/Login';
 import Register from '../features/Register';
 import CustomerDashboard from '../features/CustomerDashboard';
@@ -32,6 +33,7 @@ import AdminUsers from '../features/admin/AdminUsers';
 import AdminLogs from '../features/admin/AdminLogs';
 import AdminSettings from '../features/admin/AdminSettings';
 import AdminBanners from '../features/admin/AdminBanners';
+import AdminVideos from '../features/admin/AdminVideos';
 import AdminLogin from '../features/admin/AdminLogin';
 import EmployeeLogin from '../features/admin/EmployeeLogin';
 import AdminRegister from '../features/admin/AdminRegister';
@@ -78,6 +80,7 @@ const AppRoutes: React.FC = () => {
         <Route path="corporate-enquiry" element={<CorporateEnquiry />} />
         <Route path="compare" element={<CompareProducts />} />
         <Route path="billing-software" element={<BillingSoftwarePage />} />
+        <Route path="videos" element={<VideoGallery />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="dashboard" element={<ProtectedRoute allowedRoles={['customer', 'admin', 'employee']}><CustomerDashboard /></ProtectedRoute>} />
@@ -107,6 +110,7 @@ const AppRoutes: React.FC = () => {
         <Route path="employees" element={<AdminEmployees />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="banners" element={<AdminBanners />} />
+        <Route path="videos" element={<AdminVideos />} />
         <Route path="logs" element={<AdminLogs />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>

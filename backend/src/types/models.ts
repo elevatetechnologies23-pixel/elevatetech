@@ -260,6 +260,20 @@ export interface IBanner extends Document {
   updatedAt: Date;
 }
 
+// Video Showcase model
+export interface IVideo extends Document {
+  title: string;
+  description?: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  category: string;
+  isFeatured: boolean;
+  isActive: boolean;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Notification models
 export interface INotification extends Document {
   user: Types.ObjectId;

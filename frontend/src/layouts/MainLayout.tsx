@@ -15,7 +15,8 @@ import {
   Phone,
   Mail,
   MapPin,
-  Heart
+  Heart,
+  Tv
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
 import { useSettings } from '../utils/SettingsContext';
@@ -89,6 +90,7 @@ const MainLayout: React.FC = () => {
           <div className="flex items-center gap-4">
             <SocialMediaLinks size="sm" />
             <span className="text-white/20">|</span>
+            <Link to="/videos" className="hover:text-accent-blue transition-colors font-bold text-accent-blue flex items-center gap-1"><Tv size={12} /> Video Demos</Link>
             <Link to="/corporate-enquiry" className="hover:text-accent-blue transition-colors">Corporate Enquiry</Link>
             <Link to="/compare" className="hover:text-accent-blue transition-colors">Compare Products</Link>
             <Link to="/billing-software" className="hover:text-accent-blue transition-colors font-medium text-accent-gold">Billing Software</Link>
@@ -315,12 +317,12 @@ const MainLayout: React.FC = () => {
 
           {/* Col 3: Support & Resources */}
           <div>
-            <h4 className="font-semibold text-sm uppercase tracking-wider mb-4 text-primary-400">Support</h4>
+            <h4 className="font-semibold text-sm uppercase tracking-wider mb-4 text-primary-400">Support & Demos</h4>
             <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-300">
-              <li><Link to="/support-tickets" className="hover:text-accent-blue">Submit Ticket</Link></li>
-              <li><Link to="/faq" className="hover:text-accent-blue">Frequently Asked Questions</Link></li>
+              <li><Link to="/videos" className="hover:text-accent-blue font-bold text-accent-blue flex items-center gap-1"><Tv size={14} /> Video Demos & Tutorials</Link></li>
               <li><Link to="/corporate-enquiry" className="hover:text-accent-blue">Request Quote</Link></li>
-              <li><Link to="/blog" className="hover:text-accent-blue">IT Services Blog</Link></li>
+              <li><Link to="/billing-software" className="hover:text-accent-blue">Billing Software Plans</Link></li>
+              <li><Link to="/dashboard" className="hover:text-accent-blue">Customer Portal</Link></li>
             </ul>
           </div>
 

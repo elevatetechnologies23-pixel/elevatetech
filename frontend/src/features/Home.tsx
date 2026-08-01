@@ -19,7 +19,10 @@ import {
   ArrowRight,
   ChevronRight,
   ChevronLeft,
-  Heart
+  Heart,
+  Play,
+  Tv,
+  X
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -104,6 +107,26 @@ const Home: React.FC = () => {
     }
   ]);
 
+  const [featuredVideos, setFeaturedVideos] = useState<any[]>([
+    {
+      _id: 'fv1',
+      title: 'Elevate POS & GST Billing Software Live Demo',
+      description: 'Watch how our billing software handles instant barcode scanning, Thermal invoice printing, multi-counter database sync, and GST return exports.',
+      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=1000',
+      category: 'POS Billing Tutorial'
+    },
+    {
+      _id: 'fv2',
+      title: 'Enterprise CCTV Camera IP Installation & Setup Guide',
+      description: 'Complete walkthrough of installing IP Cameras, NVR storage units, remote mobile monitoring, and motion alerts.',
+      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1000',
+      category: 'CCTV Security Overview'
+    }
+  ]);
+  const [activePlayingVideo, setActivePlayingVideo] = useState<string | null>(null);
+
   const isInWishlist = (id: string) => wishlist.some(item => (item.id || (item as any)._id) === id);
 
   const toggleWishlist = (e: React.MouseEvent, prod: ProductItem) => {
@@ -118,7 +141,7 @@ const Home: React.FC = () => {
     }
   };
 
-  // Fetch dynamic banners from backend API
+  // Fetch dynamic banners & videos from backend API
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -139,6 +162,17 @@ const Home: React.FC = () => {
       }
     };
 
+    const fetchVideos = async () => {
+      try {
+        const res = await api.get('/videos');
+        if (res.data?.data && res.data.data.length > 0) {
+          setFeaturedVideos(res.data.data.slice(0, 3));
+        }
+      } catch (err) {
+        console.warn('Using default videos state');
+      }
+    };
+
     const fetchFeatured = async () => {
       try {
         const res = await api.get('/products?isFeatured=true');
@@ -151,6 +185,7 @@ const Home: React.FC = () => {
     };
 
     fetchBanners();
+    fetchVideos();
     fetchFeatured();
   }, [settings]);
 
@@ -311,6 +346,114 @@ const Home: React.FC = () => {
           })}
         </div>
       </section>
+
+      {/* 2.5 Video Demos & Showcase Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <span className="text-xs uppercase tracking-widest text-accent-blue font-extrabold flex items-center gap-1.5 block mb-1">
+              <Tv size={14} /> Video Showcase
+            </span>
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Product Demos & Tutorials</h2>
+            <p className="text-sm text-slate-400 mt-1">Watch live demonstrations of POS software, CCTV installations, and hardware setups.</p>
+          </div>
+          <Link to="/videos" className="text-accent-blue text-sm font-bold flex items-center gap-1 hover:underline">
+            All Video Demos <ChevronRight size={16} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredVideos.map((vid) => (
+            <div
+              key={vid._id || vid.id || vid.title}
+              className="glass-card overflow-hidden group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 rounded-3xl border border-slate-200/60 dark:border-primary-500/30 flex flex-col justify-between"
+            >
+              {/* Thumbnail Poster */}
+              <div 
+                className="relative h-48 bg-slate-950 overflow-hidden cursor-pointer"
+                onClick={() => {
+                  let url = vid.videoUrl || '';
+                  if (url.includes('youtube.com/watch?v=')) {
+                    url = `https://www.youtube.com/embed/${url.split('v=')[1]?.split('&')[0]}?autoplay=1`;
+                  } else if (url.includes('youtu.be/')) {
+                    url = `https://www.youtube.com/embed/${url.split('youtu.be/')[1]?.split('?')[0]}?autoplay=1`;
+                  }
+                  setActivePlayingVideo(url);
+                }}
+              >
+                <img
+                  src={vid.thumbnailUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800'}
+                  alt={vid.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800';
+                  }}
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent p-4 flex flex-col justify-between">
+                  <span className="bg-slate-900/80 backdrop-blur-md text-accent-blue font-bold px-2.5 py-1 rounded-full text-[10px] border border-white/10 w-fit">
+                    {vid.category || 'Product Demo'}
+                  </span>
+
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-accent-blue to-indigo-600 text-white flex items-center justify-center shadow-xl shadow-accent-blue/40 group-hover:scale-115 transition-all duration-300 border-2 border-white/40">
+                      <Play size={24} className="ml-1 fill-white" />
+                    </div>
+                  </div>
+
+                  <h3 className="text-white font-extrabold text-sm line-clamp-1 group-hover:text-accent-blue transition-colors">
+                    {vid.title}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="p-5 space-y-3 text-left">
+                {vid.description && (
+                  <p className="text-xs text-slate-500 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                    {vid.description}
+                  </p>
+                )}
+                <button
+                  onClick={() => {
+                    let url = vid.videoUrl || '';
+                    if (url.includes('youtube.com/watch?v=')) {
+                      url = `https://www.youtube.com/embed/${url.split('v=')[1]?.split('&')[0]}?autoplay=1`;
+                    } else if (url.includes('youtu.be/')) {
+                      url = `https://www.youtube.com/embed/${url.split('youtu.be/')[1]?.split('?')[0]}?autoplay=1`;
+                    }
+                    setActivePlayingVideo(url);
+                  }}
+                  className="btn-primary text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 shadow-md shadow-accent-blue/20"
+                >
+                  <Play size={12} className="fill-white" /> Play Video Demo
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Video Modal Lightbox */}
+      {activePlayingVideo && (
+        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative max-w-4xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            <button
+              onClick={() => setActivePlayingVideo(null)}
+              className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-slate-900/80 text-white hover:bg-red-500 transition-colors border border-white/20"
+              aria-label="Close Video Player"
+            >
+              <X size={20} />
+            </button>
+            <iframe
+              src={activePlayingVideo}
+              title="Video Player"
+              className="w-full h-full border-none"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
 
       {/* 3. Featured Products Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
