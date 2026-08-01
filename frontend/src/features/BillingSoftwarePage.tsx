@@ -10,6 +10,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import api from '../services/api';
+import { useSettings } from '../utils/SettingsContext';
 
 const PLANS = [
   {
@@ -54,6 +55,7 @@ const PLANS = [
 const BillingSoftwarePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { settings } = useSettings();
 
   const [softwarePlans, setSoftwarePlans] = useState<any[]>(PLANS);
   const [isLoadingPlans, setIsLoadingPlans] = useState(false);
@@ -148,10 +150,10 @@ const BillingSoftwarePage: React.FC = () => {
       
       {/* Introduction */}
       <div className="text-center max-w-2xl mx-auto space-y-2">
-        <h1 className="text-3xl font-extrabold tracking-tight">Enterprise POS Billing Software</h1>
-        <p className="text-sm text-slate-400">Offline-first desktop software for retail invoicing, stock control, and automated GST reporting. Fully integrated with standard POS terminals and barcode scanners.</p>
+        <h1 className="text-3xl font-extrabold tracking-tight">{settings.billingSoftwareTitle || 'Enterprise POS Billing Software'}</h1>
+        <p className="text-sm text-slate-400">{settings.billingSoftwareSubtitle || 'Offline-first desktop software for retail invoicing, stock control, and automated GST reporting. Fully integrated with standard POS terminals and barcode scanners.'}</p>
         <div className="pt-4 inline-flex items-center gap-2 text-xs text-accent-blue bg-accent-blue/10 px-3 py-1.5 rounded-full font-semibold">
-          <Download size={14} /> Latest Stable: v5.2.14-Windows
+          <Download size={14} /> Latest Stable: {settings.billingSoftwareVersion || 'v5.2.14-Windows'}
         </div>
       </div>
 

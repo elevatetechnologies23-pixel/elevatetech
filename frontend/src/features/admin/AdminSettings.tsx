@@ -31,6 +31,11 @@ const AdminSettings: React.FC = () => {
   const [chatbotEnabled, setChatbotEnabled] = useState('true');
   const [chatbotWelcomeMessage, setChatbotWelcomeMessage] = useState('');
 
+  // Billing Software Page Banner states (Admin Managed)
+  const [billingSoftwareTitle, setBillingSoftwareTitle] = useState('');
+  const [billingSoftwareSubtitle, setBillingSoftwareSubtitle] = useState('');
+  const [billingSoftwareVersion, setBillingSoftwareVersion] = useState('');
+
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -55,6 +60,9 @@ const AdminSettings: React.FC = () => {
       setWhatsappNumber(settings.whatsappNumber || '');
       setChatbotEnabled(settings.chatbotEnabled || 'true');
       setChatbotWelcomeMessage(settings.chatbotWelcomeMessage || '');
+      setBillingSoftwareTitle(settings.billingSoftwareTitle || '');
+      setBillingSoftwareSubtitle(settings.billingSoftwareSubtitle || '');
+      setBillingSoftwareVersion(settings.billingSoftwareVersion || '');
     }
   }, [settings]);
 
@@ -82,6 +90,9 @@ const AdminSettings: React.FC = () => {
       { key: 'whatsappNumber', value: whatsappNumber },
       { key: 'chatbotEnabled', value: chatbotEnabled },
       { key: 'chatbotWelcomeMessage', value: chatbotWelcomeMessage },
+      { key: 'billingSoftwareTitle', value: billingSoftwareTitle },
+      { key: 'billingSoftwareSubtitle', value: billingSoftwareSubtitle },
+      { key: 'billingSoftwareVersion', value: billingSoftwareVersion },
     ];
 
     try {
@@ -185,6 +196,43 @@ const AdminSettings: React.FC = () => {
                   value={heroBannerSubtitle} 
                   onChange={(e) => setHeroBannerSubtitle(e.target.value)}
                   className="input-field py-2 resize-none" 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2.5: Billing Software Page Configurations */}
+          <div className="space-y-4">
+            <h3 className="font-bold text-sm text-accent-blue border-b border-slate-100 dark:border-primary-500/30 pb-1">Billing Software Page Banner</h3>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-1">
+                <span className="font-semibold">Billing Software Header Title</span>
+                <input 
+                  type="text" required
+                  value={billingSoftwareTitle} 
+                  onChange={(e) => setBillingSoftwareTitle(e.target.value)}
+                  placeholder="Enterprise POS Billing Software"
+                  className="input-field py-2" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">Billing Software Subtitle</span>
+                <textarea 
+                  required rows={2}
+                  value={billingSoftwareSubtitle} 
+                  onChange={(e) => setBillingSoftwareSubtitle(e.target.value)}
+                  placeholder="Offline-first desktop software for retail invoicing..."
+                  className="input-field py-2 resize-none" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">Software Release Version Tag</span>
+                <input 
+                  type="text" required
+                  value={billingSoftwareVersion} 
+                  onChange={(e) => setBillingSoftwareVersion(e.target.value)}
+                  placeholder="v5.2.14-Windows"
+                  className="input-field py-2" 
                 />
               </div>
             </div>

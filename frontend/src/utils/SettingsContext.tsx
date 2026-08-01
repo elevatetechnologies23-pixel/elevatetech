@@ -22,6 +22,10 @@ export interface Settings {
   // Chatbot Settings (Admin Managed)
   chatbotEnabled: string;
   chatbotWelcomeMessage: string;
+  // Billing Software Page Settings (Admin Managed)
+  billingSoftwareTitle: string;
+  billingSoftwareSubtitle: string;
+  billingSoftwareVersion: string;
 }
 
 const defaultSettings: Settings = {
@@ -43,6 +47,9 @@ const defaultSettings: Settings = {
   whatsappNumber: '919922567375',
   chatbotEnabled: 'true',
   chatbotWelcomeMessage: 'Hello! Welcome to Elevate Technology Customer Support. How can we assist you today?',
+  billingSoftwareTitle: 'Enterprise POS Billing Software',
+  billingSoftwareSubtitle: 'Offline-first desktop software for retail invoicing, stock control, and automated GST reporting. Fully integrated with standard POS terminals and barcode scanners.',
+  billingSoftwareVersion: 'v5.2.14-Windows'
 };
 
 interface SettingsContextType {
