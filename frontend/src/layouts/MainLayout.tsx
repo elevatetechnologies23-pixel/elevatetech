@@ -81,25 +81,25 @@ const MainLayout: React.FC = () => {
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 ${mode === 'dark' ? 'bg-primary-800 text-primary-50' : 'bg-slate-50 text-primary-500'}`}>
       {/* Top Banner Contact Bar */}
-      <div className="bg-primary-500 text-primary-100 text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-8 border-b border-primary-400/20 dark:bg-primary-700 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-6">
-          <div className="flex items-center gap-5 sm:gap-6 font-semibold">
-            <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
-              <Phone size={16} className="text-accent-blue" /> {settings.companyPhone || '+91 9673391008'}
+      <div className="bg-primary-500 text-primary-100 text-xs sm:text-sm py-2.5 px-4 sm:px-6 border-b border-primary-400/20 dark:bg-primary-700 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2.5 sm:gap-4">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-5 font-medium">
+            <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+              <Phone size={14} className="text-accent-blue shrink-0" /> {settings.companyPhone || '+91 9922567375'}
             </span>
-            <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
-              <Mail size={16} className="text-accent-blue" /> {settings.companyEmail || 'enterprise@electronics.com'}
+            <span className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+              <Mail size={14} className="text-accent-blue shrink-0" /> {settings.companyEmail || 'elevatetechnologies23@gmail.com'}
             </span>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-bold text-xs sm:text-sm">
-            <SocialMediaLinks size="md" />
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 font-semibold text-xs">
+            <SocialMediaLinks size="sm" />
             <span className="text-white/30 hidden sm:inline">|</span>
-            <Link to="/videos" className="hover:text-white transition-colors font-extrabold text-accent-blue flex items-center gap-1.5 bg-accent-blue/10 px-3 py-1 rounded-full border border-accent-blue/30">
-              <Tv size={16} /> Video Demos
+            <Link to="/videos" className="hover:text-white transition-colors font-extrabold text-accent-blue flex items-center gap-1 bg-accent-blue/15 px-2.5 py-0.5 rounded-full border border-accent-blue/30">
+              <Tv size={13} /> Video Demos
             </Link>
             <Link to="/corporate-enquiry" className="hover:text-white transition-colors">Corporate Enquiry</Link>
             <Link to="/compare" className="hover:text-white transition-colors">Compare Products</Link>
-            <Link to="/billing-software" className="hover:text-white transition-colors font-extrabold text-accent-gold bg-accent-gold/10 px-3 py-1 rounded-full border border-accent-gold/30">
+            <Link to="/billing-software" className="hover:text-white transition-colors font-extrabold text-accent-gold bg-accent-gold/15 px-2.5 py-0.5 rounded-full border border-accent-gold/30">
               Billing Software
             </Link>
           </div>

@@ -26,8 +26,8 @@ export interface Settings {
 
 const defaultSettings: Settings = {
   companyName: 'Elevate Technology',
-  companyEmail: 'info@elevatetechnology.com',
-  companyPhone: '+91 96733 91008',
+  companyEmail: 'elevatetechnologies23@gmail.com',
+  companyPhone: '+91 9922567375',
   companyAddress: 'Bengaluru, Karnataka, India',
   logoUrl: '',
   heroBannerTitle: 'B2B Enterprise Electronics Procurement',
@@ -40,7 +40,7 @@ const defaultSettings: Settings = {
   instagramUrl: 'https://instagram.com',
   linkedinUrl: 'https://linkedin.com',
   youtubeUrl: 'https://youtube.com',
-  whatsappNumber: '919673391008',
+  whatsappNumber: '919922567375',
   chatbotEnabled: 'true',
   chatbotWelcomeMessage: 'Hello! Welcome to Elevate Technology Customer Support. How can we assist you today?',
 };
