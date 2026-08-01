@@ -508,103 +508,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. Value Propositions */}
-      <section className="bg-white dark:bg-primary-700 py-12 border-y border-slate-200/50 dark:border-primary-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-accent-blue/10 dark:bg-primary-600 rounded-xl text-accent-blue">
-              <TrendingUp size={24} />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm">Corporate B2B GST Pricing</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-300 mt-1 leading-relaxed">
-                Provide your corporate GSTIN during checkout and download compliant business invoices automatically. Claim tax credits instantly.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-accent-blue/10 dark:bg-primary-600 rounded-xl text-accent-blue">
-              <ShieldCheck size={24} />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm">Authorized Warranty & Setup</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-300 mt-1 leading-relaxed">
-                We are certified partners for Lenovo, Hikvision, Cisco, HP, and Corsair. All hardware comes with direct manufacturer warranty support.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-accent-blue/10 dark:bg-primary-600 rounded-xl text-accent-blue">
-              <Clock size={24} />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm">24/7 Enterprise Helpdesk</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-300 mt-1 leading-relaxed">
-                Dedicated support system for IT service agreements, billing software upgrades, and remote CCTV configurations.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 5. Customer Testimonials */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-xl mx-auto mb-10">
-          <h2 className="text-2xl font-bold tracking-tight">What Our Partners Say</h2>
-          <p className="text-sm text-slate-400 mt-2">Trusted by over 500+ small businesses and IT managers.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="glass-card p-6 space-y-4">
-            <div className="flex text-yellow-400">
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-            </div>
-            <p className="text-xs text-slate-400 dark:text-slate-300 italic">
-              "We migrated all our branch accounting to Enterprise Billing Software. The POS printing configuration works seamlessly, and our compliance logs are fully automated now."
-            </p>
-            <div>
-              <p className="font-bold text-xs">Rajesh Kumar</p>
-              <p className="text-[10px] text-slate-400">Director, K-Retail Chains</p>
-            </div>
-          </div>
-          <div className="glass-card p-6 space-y-4">
-            <div className="flex text-yellow-400">
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-            </div>
-            <p className="text-xs text-slate-400 dark:text-slate-300 italic">
-              "Purchased dome and bullet CCTV systems for our 3-floor facility. Excellent day/night video resolution. The support team configured our remote mobile monitoring within 2 hours."
-            </p>
-            <div>
-              <p className="font-bold text-xs">Sneha Sharma</p>
-              <p className="text-[10px] text-slate-400">Head of Security, Zenith TechLabs</p>
-            </div>
-          </div>
-          <div className="glass-card p-6 space-y-4">
-            <div className="flex text-yellow-400">
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-            </div>
-            <p className="text-xs text-slate-400 dark:text-slate-300 italic">
-              "Outstanding procurement experience. Ordered 15 ThinkPad laptops and Cisco switches. The bulk pricing discount we received was unmatched. Standardizing on Elevate Technology."
-            </p>
-            <div>
-              <p className="font-bold text-xs">Arjun Patel</p>
-              <p className="text-[10px] text-slate-400">Chief Information Officer, Alpha Solutions</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Industry Solutions Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white dark:from-primary-800 dark:to-primary-900 relative overflow-hidden">
@@ -691,6 +595,104 @@ const Home: React.FC = () => {
             >
               Explore Billing Software <ArrowRight size={16} />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Value Propositions */}
+      <section className="bg-white dark:bg-primary-700 py-12 border-y border-slate-200/50 dark:border-primary-500/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-accent-blue/10 dark:bg-primary-600 rounded-xl text-accent-blue">
+              <TrendingUp size={24} />
+            </div>
+            <div className="text-left">
+              <h3 className="font-bold text-sm">Corporate B2B GST Pricing</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-300 mt-1 leading-relaxed">
+                Provide your corporate GSTIN during checkout and download compliant business invoices automatically. Claim tax credits instantly.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-accent-blue/10 dark:bg-primary-600 rounded-xl text-accent-blue">
+              <ShieldCheck size={24} />
+            </div>
+            <div className="text-left">
+              <h3 className="font-bold text-sm">Authorized Warranty &amp; Setup</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-300 mt-1 leading-relaxed">
+                We are certified partners for Lenovo, Hikvision, Cisco, HP, and Corsair. All hardware comes with direct manufacturer warranty support.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-accent-blue/10 dark:bg-primary-600 rounded-xl text-accent-blue">
+              <Clock size={24} />
+            </div>
+            <div className="text-left">
+              <h3 className="font-bold text-sm">24/7 Enterprise Helpdesk</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-300 mt-1 leading-relaxed">
+                Dedicated support system for IT service agreements, billing software upgrades, and remote CCTV configurations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Testimonials */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">What Our Partners Say</h2>
+          <p className="text-sm text-slate-400">Trusted by over 500+ small businesses and IT managers.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          <div className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30">
+            <div className="flex text-yellow-400">
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
+              "We migrated all our branch accounting to Enterprise Billing Software. The POS printing configuration works seamlessly, and our compliance logs are fully automated now."
+            </p>
+            <div>
+              <p className="font-bold text-xs sm:text-sm text-primary-500 dark:text-primary-50">Rajesh Kumar</p>
+              <p className="text-[10px] sm:text-xs text-slate-400">Director, K-Retail Chains</p>
+            </div>
+          </div>
+          <div className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30">
+            <div className="flex text-yellow-400">
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
+              "Purchased dome and bullet CCTV systems for our 3-floor facility. Excellent day/night video resolution. The support team configured our remote mobile monitoring within 2 hours."
+            </p>
+            <div>
+              <p className="font-bold text-xs sm:text-sm text-primary-500 dark:text-primary-50">Sneha Sharma</p>
+              <p className="text-[10px] sm:text-xs text-slate-400">Head of Security, Zenith TechLabs</p>
+            </div>
+          </div>
+          <div className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30">
+            <div className="flex text-yellow-400">
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+              <Star size={16} className="fill-current" />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
+              "Outstanding procurement experience. Ordered 15 ThinkPad laptops and Cisco switches. The bulk pricing discount we received was unmatched. Standardizing on Elevate Technology."
+            </p>
+            <div>
+              <p className="font-bold text-xs sm:text-sm text-primary-500 dark:text-primary-50">Arjun Patel</p>
+              <p className="text-[10px] sm:text-xs text-slate-400">Chief Information Officer, Alpha Solutions</p>
+            </div>
           </div>
         </div>
       </section>
