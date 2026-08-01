@@ -98,11 +98,11 @@ const MainLayout: React.FC = () => {
 
       {/* Main Glassmorphic Header */}
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-primary-600/80 backdrop-blur-md border-b border-slate-200/50 dark:border-primary-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between gap-6 py-2">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <Logo size="md" />
+          <Link to="/" className="flex items-center group">
+            <Logo size="lg" />
           </Link>
 
           {/* Desktop Search Bar */}

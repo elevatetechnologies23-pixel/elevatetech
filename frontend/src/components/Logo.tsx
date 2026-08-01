@@ -17,31 +17,31 @@ export const Logo: React.FC<LogoProps> = ({
 }) => {
   // Size mapping
   const iconSizes = {
-    sm: 'w-7 h-7',
-    md: 'w-9 h-9',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16'
+    sm: 'w-8 h-8',
+    md: 'w-11 h-11',
+    lg: 'w-14 h-14',
+    xl: 'w-20 h-20'
   };
 
   const titleSizes = {
-    sm: 'text-sm',
-    md: 'text-lg',
-    lg: 'text-2xl',
-    xl: 'text-3xl'
+    sm: 'text-base',
+    md: 'text-xl sm:text-2xl',
+    lg: 'text-2xl sm:text-3xl',
+    xl: 'text-4xl sm:text-5xl'
   };
 
   const subtitleSizes = {
-    sm: 'text-[7px] tracking-[0.25em]',
-    md: 'text-[9px] tracking-[0.3em]',
-    lg: 'text-[11px] tracking-[0.35em]',
-    xl: 'text-[13px] tracking-[0.4em]'
+    sm: 'text-[8px] tracking-[0.25em]',
+    md: 'text-[10px] sm:text-[11px] tracking-[0.32em]',
+    lg: 'text-[12px] sm:text-[13px] tracking-[0.36em]',
+    xl: 'text-[15px] tracking-[0.42em]'
   };
 
   const taglineSizes = {
-    sm: 'text-[6px]',
-    md: 'text-[7px]',
-    lg: 'text-[9px]',
-    xl: 'text-[10px]'
+    sm: 'text-[7px]',
+    md: 'text-[8px] sm:text-[9px]',
+    lg: 'text-[10px] sm:text-[11px]',
+    xl: 'text-[12px]'
   };
 
   return (
