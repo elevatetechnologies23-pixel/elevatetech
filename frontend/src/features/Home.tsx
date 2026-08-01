@@ -533,45 +533,53 @@ const Home: React.FC = () => {
           </div>
 
           {/* Industries Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
             {[
-              { icon: '🔩', label: 'Auto Parts' },
-              { icon: '🏪', label: 'Retail' },
-              { icon: '🛒', label: 'Ecommerce' },
-              { icon: '🏷️', label: 'FMCG' },
-              { icon: '🍽️', label: 'Food & Beverage' },
-              { icon: '💾', label: 'Computer Hardware' },
-              { icon: '🧪', label: 'Chemical' },
-              { icon: '⚡', label: 'Electrical Goods' },
-              { icon: '📰', label: 'Paper' },
-              { icon: '✈️', label: 'Travel' },
-              { icon: '🛋️', label: 'Furniture' },
-              { icon: '💊', label: 'Pharma' },
-              { icon: '🎨', label: 'Paint' },
-              { icon: '📱', label: 'Mobile Store' },
-              { icon: '👗', label: 'Garments' },
-              { icon: '💎', label: 'Gems & Jewellery' },
-              { icon: '🌾', label: 'Agriculture' },
-              { icon: '✏️', label: 'Stationery' },
-              { icon: '🏗️', label: 'Construction' },
-              { icon: '🏥', label: 'Healthcare' },
+              { icon: '🔩', label: 'Auto Parts', gradient: 'from-blue-600 to-slate-700', shadow: 'shadow-[0_10px_25px_rgba(37,99,235,0.35)]' },
+              { icon: '🏪', label: 'Retail', gradient: 'from-emerald-500 to-teal-700', shadow: 'shadow-[0_10px_25px_rgba(16,185,129,0.35)]' },
+              { icon: '🛒', label: 'Ecommerce', gradient: 'from-indigo-500 to-purple-700', shadow: 'shadow-[0_10px_25px_rgba(99,102,241,0.35)]' },
+              { icon: '🏷️', label: 'FMCG', gradient: 'from-amber-500 to-orange-600', shadow: 'shadow-[0_10px_25px_rgba(245,158,11,0.35)]' },
+              { icon: '🍽️', label: 'Food & Beverage', gradient: 'from-rose-500 to-pink-600', shadow: 'shadow-[0_10px_25px_rgba(244,63,94,0.35)]' },
+              { icon: '💾', label: 'Computer Hardware', gradient: 'from-cyan-500 to-blue-600', shadow: 'shadow-[0_10px_25px_rgba(6,182,212,0.35)]' },
+              { icon: '🧪', label: 'Chemical', gradient: 'from-purple-500 to-violet-700', shadow: 'shadow-[0_10px_25px_rgba(168,85,247,0.35)]' },
+              { icon: '⚡', label: 'Electrical Goods', gradient: 'from-amber-400 to-yellow-600', shadow: 'shadow-[0_10px_25px_rgba(251,191,36,0.35)]' },
+              { icon: '📰', label: 'Paper', gradient: 'from-sky-500 to-blue-600', shadow: 'shadow-[0_10px_25px_rgba(14,165,233,0.35)]' },
+              { icon: '✈️', label: 'Travel', gradient: 'from-blue-500 to-cyan-600', shadow: 'shadow-[0_10px_25px_rgba(59,130,246,0.35)]' },
+              { icon: '🛋️', label: 'Furniture', gradient: 'from-amber-600 to-orange-800', shadow: 'shadow-[0_10px_25px_rgba(217,119,6,0.35)]' },
+              { icon: '💊', label: 'Pharma', gradient: 'from-teal-500 to-emerald-600', shadow: 'shadow-[0_10px_25px_rgba(20,184,166,0.35)]' },
+              { icon: '🎨', label: 'Paint', gradient: 'from-pink-500 to-rose-600', shadow: 'shadow-[0_10px_25px_rgba(236,72,153,0.35)]' },
+              { icon: '📱', label: 'Mobile Store', gradient: 'from-violet-500 to-indigo-700', shadow: 'shadow-[0_10px_25px_rgba(139,92,246,0.35)]' },
+              { icon: '👗', label: 'Garments', gradient: 'from-fuchsia-500 to-pink-600', shadow: 'shadow-[0_10px_25px_rgba(217,70,239,0.35)]' },
+              { icon: '💎', label: 'Gems & Jewellery', gradient: 'from-cyan-400 to-emerald-600', shadow: 'shadow-[0_10px_25px_rgba(34,211,238,0.35)]' },
+              { icon: '🌾', label: 'Agriculture', gradient: 'from-green-500 to-emerald-700', shadow: 'shadow-[0_10px_25px_rgba(34,197,94,0.35)]' },
+              { icon: '✏️', label: 'Stationery', gradient: 'from-orange-400 to-red-500', shadow: 'shadow-[0_10px_25px_rgba(251,146,60,0.35)]' },
+              { icon: '🏗️', label: 'Construction', gradient: 'from-stone-500 to-slate-700', shadow: 'shadow-[0_10px_25px_rgba(120,113,108,0.35)]' },
+              { icon: '🏥', label: 'Healthcare', gradient: 'from-red-500 to-rose-600', shadow: 'shadow-[0_10px_25px_rgba(239,68,68,0.35)]' },
             ].map((industry) => (
               <div
                 key={industry.label}
-                className="group relative flex flex-col items-center justify-center gap-3 p-5 bg-white dark:bg-primary-700 rounded-2xl border border-slate-100 dark:border-primary-500/20 shadow-sm hover:shadow-lg hover:border-accent-blue/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center"
+                onClick={() => navigate(`/catalog?category=Billing+Software`)}
+                className="group relative flex flex-col items-center justify-center p-5 md:p-6 bg-white dark:bg-primary-700/90 rounded-3xl border border-slate-200/60 dark:border-primary-500/30 shadow-md hover:shadow-xl hover:border-accent-blue/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer text-center overflow-hidden"
               >
-                {/* Hover glow */}
-                <div className="absolute inset-0 rounded-2xl bg-accent-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Background Ambient Glow */}
+                <div className={`absolute -top-8 -right-8 w-20 h-20 rounded-full bg-gradient-to-br ${industry.gradient} opacity-10 group-hover:opacity-25 blur-lg transition-all duration-500`} />
 
-                <span className="text-3xl group-hover:scale-110 transition-transform duration-300 relative z-10">
-                  {industry.icon}
-                </span>
-                <span className="text-xs font-semibold text-primary-500 dark:text-primary-100 group-hover:text-accent-blue transition-colors duration-200 leading-tight relative z-10">
+                {/* 3D Icon Container Badge */}
+                <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br ${industry.gradient} text-white flex items-center justify-center mb-3.5 ${industry.shadow} group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative border border-white/30 backdrop-blur-md shrink-0`}>
+                  {/* Glossy 3D Highlight Curve */}
+                  <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-2xl sm:rounded-t-3xl pointer-events-none" />
+
+                  <span className="text-3xl sm:text-4xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] transform group-hover:scale-105 transition-transform duration-300 relative z-10">
+                    {industry.icon}
+                  </span>
+                </div>
+
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-accent-blue transition-colors duration-200 leading-tight relative z-10">
                   {industry.label}
                 </span>
 
-                {/* Bottom accent bar */}
-                <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-blue rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                {/* Bottom accent line */}
+                <div className="absolute bottom-0 left-6 right-6 h-1 bg-accent-blue rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
               </div>
             ))}
           </div>
