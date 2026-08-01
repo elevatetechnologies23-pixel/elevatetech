@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
@@ -55,6 +55,41 @@ const BillingSoftwarePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [softwarePlans, setSoftwarePlans] = useState<any[]>(PLANS);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(false);
+
+  // Fetch software products dynamically from backend API
+  useEffect(() => {
+    const fetchSoftwareProducts = async () => {
+      setIsLoadingPlans(true);
+      try {
+        const res = await api.get('/products?category=Billing+Software');
+        if (res.data?.data && res.data.data.length > 0) {
+          const apiPlans = res.data.data.map((prod: any, idx: number) => ({
+            id: prod._id || prod.id,
+            name: prod.name,
+            price: prod.basePrice,
+            description: prod.description || 'Enterprise POS & GST Billing Software plan.',
+            features: prod.specifications ? prod.specifications.map((s: any) => `${s.name}: ${s.value}`) : [
+              'Barcode scanner integrations',
+              'Thermal receipt printing support',
+              'GST invoice reporting & exports',
+              '1 Year standard updates'
+            ],
+            popular: idx === 1 || prod.isFeatured
+          }));
+          setSoftwarePlans(apiPlans);
+        }
+      } catch (err) {
+        console.warn('API error fetching software products, using default plans');
+      } finally {
+        setIsLoadingPlans(false);
+      }
+    };
+
+    fetchSoftwareProducts();
+  }, []);
+
   // License activation states
   const [licenseKey, setLicenseKey] = useState('');
   const [macAddress, setMacAddress] = useState('');
@@ -62,9 +97,9 @@ const BillingSoftwarePage: React.FC = () => {
   const [activationMsg, setActivationMsg] = useState('');
   const [activationLoading, setActivationLoading] = useState(false);
 
-  const handleBuyPlan = (plan: typeof PLANS[0]) => {
+  const handleBuyPlan = (plan: any) => {
     dispatch(addToCart({
-      id: `billing-sw-${plan.name.toLowerCase().replace(/\s+/g, '-')}`,
+      id: plan.id || `billing-sw-${plan.name.toLowerCase().replace(/\s+/g, '-')}`,
       name: plan.name,
       price: plan.price,
       image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=60',
@@ -98,7 +133,7 @@ const BillingSoftwarePage: React.FC = () => {
       // Simulate license success locally for testing
       if (licenseKey.startsWith('LIC-')) {
         setActivationStatus('success');
-        setActivationMsg('License key activated successfully for this device! valid until: ' + new Date(Date.now() + 365*24*60*60*1000).toLocaleDateString());
+        setActivationMsg('License key activated successfully for this device! Valid until: ' + new Date(Date.now() + 365*24*60*60*1000).toLocaleDateString());
       } else {
         setActivationStatus('error');
         setActivationMsg(err.message || 'Activation failed. Invalid license key format (must start with LIC- for tests).');
@@ -123,50 +158,56 @@ const BillingSoftwarePage: React.FC = () => {
       {/* Pricing Grid */}
       <section className="space-y-8">
         <h2 className="text-xl font-bold text-center">Select Software License Plan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PLANS.map((plan) => (
-            <div 
-              key={plan.name}
-              className={`glass-card p-6 flex flex-col justify-between relative ${plan.popular ? 'border-2 border-accent-blue scale-105 shadow-lg' : ''}`}
-            >
-              {plan.popular && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent-blue text-white text-[10px] uppercase font-extrabold px-3 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles size={10} className="fill-current" /> Most Popular
-                </span>
-              )}
-              
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-extrabold text-sm uppercase tracking-wider">{plan.name}</h3>
-                  <p className="text-[11px] text-slate-400 mt-1">{plan.description}</p>
-                </div>
-
-                <div className="flex items-baseline">
-                  <span className="text-2xl font-extrabold text-primary-500 dark:text-primary-50">INR {plan.price.toLocaleString('en-IN')}</span>
-                  <span className="text-xs text-slate-400 ml-1">/ one-time license</span>
-                </div>
-
-                <hr className="border-slate-100 dark:border-primary-500" />
-
-                <ul className="space-y-2 text-xs text-slate-400 dark:text-slate-300">
-                  {plan.features.map((feat, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <CheckCircle size={12} className="text-green-500 shrink-0" />
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button 
-                onClick={() => handleBuyPlan(plan)}
-                className={`w-full mt-8 py-2.5 rounded-xl text-xs font-bold ${plan.popular ? 'btn-primary' : 'btn-secondary border border-slate-200 dark:border-primary-500'}`}
+        {isLoadingPlans ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="w-8 h-8 border-4 border-accent-blue border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {softwarePlans.map((plan) => (
+              <div 
+                key={plan.id || plan.name}
+                className={`glass-card p-6 flex flex-col justify-between relative ${plan.popular ? 'border-2 border-accent-blue scale-105 shadow-lg' : ''}`}
               >
-                Purchase License Key
-              </button>
-            </div>
-          ))}
-        </div>
+                {plan.popular && (
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent-blue text-white text-[10px] uppercase font-extrabold px-3 py-1 rounded-full flex items-center gap-1">
+                    <Sparkles size={10} className="fill-current" /> Most Popular
+                  </span>
+                )}
+                
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-extrabold text-sm uppercase tracking-wider">{plan.name}</h3>
+                    <p className="text-[11px] text-slate-400 mt-1">{plan.description}</p>
+                  </div>
+
+                  <div className="flex items-baseline">
+                    <span className="text-2xl font-extrabold text-primary-500 dark:text-primary-50">INR {plan.price.toLocaleString('en-IN')}</span>
+                    <span className="text-xs text-slate-400 ml-1">/ one-time license</span>
+                  </div>
+
+                  <hr className="border-slate-100 dark:border-primary-500" />
+
+                  <ul className="space-y-2 text-xs text-slate-400 dark:text-slate-300">
+                    {plan.features.map((feat: string, i: number) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <CheckCircle size={12} className="text-green-500 shrink-0" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button 
+                  onClick={() => handleBuyPlan(plan)}
+                  className={`w-full mt-8 py-2.5 rounded-xl text-xs font-bold ${plan.popular ? 'btn-primary' : 'btn-secondary border border-slate-200 dark:border-primary-500'}`}
+                >
+                  Purchase License Key
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Online License Activation Portal */}
