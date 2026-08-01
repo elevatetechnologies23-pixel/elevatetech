@@ -11,7 +11,10 @@ import {
   deleteUser,
   getSystemSettings,
   updateSystemSettings,
-  getPublicSettings
+  getPublicSettings,
+  deleteAuditLog,
+  clearAllAuditLogs,
+  clearOldAuditLogs
 } from '../controllers/adminController';
 import { protect, restrictTo } from '../middlewares/auth';
 
@@ -23,8 +26,11 @@ router.get('/settings/public', getPublicSettings);
 // Admin / Employee shared routes (view stats)
 router.get('/stats', protect, restrictTo('admin', 'employee'), getDashboardStats);
 
-// Admin-only operations
+// Admin-only operations & Audit log management
 router.get('/logs', protect, restrictTo('admin'), getAuditLogs);
+router.delete('/logs/clear-all', protect, restrictTo('admin'), clearAllAuditLogs);
+router.delete('/logs/clear-old', protect, restrictTo('admin'), clearOldAuditLogs);
+router.delete('/logs/:id', protect, restrictTo('admin'), deleteAuditLog);
 
 // Staff management
 router.get('/employees', protect, restrictTo('admin'), getEmployees);

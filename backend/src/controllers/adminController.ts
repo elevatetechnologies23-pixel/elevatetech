@@ -308,3 +308,43 @@ export const getPublicSettings = async (_req: Request, res: Response, next: Next
     next(error);
   }
 };
+
+export const deleteAuditLog = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const log = await AuditLog.findByIdAndDelete(req.params.id);
+    if (!log) {
+      return next(new AppError('Audit log entry not found', 404));
+    }
+    res.status(200).json({
+      status: 'success',
+      message: 'Audit log entry deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const clearAllAuditLogs = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    await AuditLog.deleteMany({});
+    res.status(200).json({
+      status: 'success',
+      message: 'All system audit logs cleared successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const clearOldAuditLogs = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const result = await AuditLog.deleteMany({ createdAt: { $lt: thirtyDaysAgo } });
+    res.status(200).json({
+      status: 'success',
+      message: `Cleared ${result.deletedCount} audit logs older than 30 days`
+    });
+  } catch (error) {
+    next(error);
+  }
+};

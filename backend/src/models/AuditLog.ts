@@ -6,7 +6,8 @@ const auditLogSchema = new Schema<IAuditLog>({
   action: { type: String, required: true },
   details: { type: String, required: true },
   ipAddress: String,
-  userAgent: String
+  userAgent: String,
+  createdAt: { type: Date, default: Date.now, expires: 2592000 } // Auto-delete logs after 30 days
 }, {
   timestamps: { createdAt: true, updatedAt: false }
 });
