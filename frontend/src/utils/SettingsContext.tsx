@@ -12,12 +12,22 @@ export interface Settings {
   gstPercentage: string;
   shippingLimit: string;
   shippingCharge: string;
+  // Social Media Links (Admin Managed)
+  facebookUrl: string;
+  twitterUrl: string;
+  instagramUrl: string;
+  linkedinUrl: string;
+  youtubeUrl: string;
+  whatsappNumber: string;
+  // Chatbot Settings (Admin Managed)
+  chatbotEnabled: string;
+  chatbotWelcomeMessage: string;
 }
 
 const defaultSettings: Settings = {
   companyName: 'Elevate Technology',
   companyEmail: 'info@elevatetechnology.com',
-  companyPhone: '+91 98765 43210',
+  companyPhone: '+91 96733 91008',
   companyAddress: 'Bengaluru, Karnataka, India',
   logoUrl: '',
   heroBannerTitle: 'B2B Enterprise Electronics Procurement',
@@ -25,6 +35,14 @@ const defaultSettings: Settings = {
   gstPercentage: '18',
   shippingLimit: '5000',
   shippingCharge: '150',
+  facebookUrl: 'https://facebook.com',
+  twitterUrl: 'https://twitter.com',
+  instagramUrl: 'https://instagram.com',
+  linkedinUrl: 'https://linkedin.com',
+  youtubeUrl: 'https://youtube.com',
+  whatsappNumber: '919673391008',
+  chatbotEnabled: 'true',
+  chatbotWelcomeMessage: 'Hello! Welcome to Elevate Technology Customer Support. How can we assist you today?',
 };
 
 interface SettingsContextType {

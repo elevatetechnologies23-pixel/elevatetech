@@ -19,6 +19,18 @@ const AdminSettings: React.FC = () => {
   const [shippingLimit, setShippingLimit] = useState('5000');
   const [shippingCharge, setShippingCharge] = useState('150');
 
+  // Social Media Link states (Admin Managed)
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [twitterUrl, setTwitterUrl] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+
+  // Support Chatbot states (Admin Managed)
+  const [chatbotEnabled, setChatbotEnabled] = useState('true');
+  const [chatbotWelcomeMessage, setChatbotWelcomeMessage] = useState('');
+
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -35,6 +47,14 @@ const AdminSettings: React.FC = () => {
       setGstPercentage(settings.gstPercentage || '18');
       setShippingLimit(settings.shippingLimit || '5000');
       setShippingCharge(settings.shippingCharge || '150');
+      setFacebookUrl(settings.facebookUrl || '');
+      setTwitterUrl(settings.twitterUrl || '');
+      setInstagramUrl(settings.instagramUrl || '');
+      setLinkedinUrl(settings.linkedinUrl || '');
+      setYoutubeUrl(settings.youtubeUrl || '');
+      setWhatsappNumber(settings.whatsappNumber || '');
+      setChatbotEnabled(settings.chatbotEnabled || 'true');
+      setChatbotWelcomeMessage(settings.chatbotWelcomeMessage || '');
     }
   }, [settings]);
 
@@ -54,6 +74,14 @@ const AdminSettings: React.FC = () => {
       { key: 'gstPercentage', value: gstPercentage },
       { key: 'shippingLimit', value: shippingLimit },
       { key: 'shippingCharge', value: shippingCharge },
+      { key: 'facebookUrl', value: facebookUrl },
+      { key: 'twitterUrl', value: twitterUrl },
+      { key: 'instagramUrl', value: instagramUrl },
+      { key: 'linkedinUrl', value: linkedinUrl },
+      { key: 'youtubeUrl', value: youtubeUrl },
+      { key: 'whatsappNumber', value: whatsappNumber },
+      { key: 'chatbotEnabled', value: chatbotEnabled },
+      { key: 'chatbotWelcomeMessage', value: chatbotWelcomeMessage },
     ];
 
     try {
@@ -190,6 +218,101 @@ const AdminSettings: React.FC = () => {
                   type="number" required min="0"
                   value={shippingCharge} 
                   onChange={(e) => setShippingCharge(e.target.value)}
+                  className="input-field py-2" 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: Social Media Links (Admin Managed) */}
+          <div className="space-y-4">
+            <h3 className="font-bold text-sm text-accent-blue border-b border-slate-100 dark:border-primary-500/30 pb-1">Social Media Links & WhatsApp</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="font-semibold">Facebook Page URL</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. https://facebook.com/elevatetech"
+                  value={facebookUrl} 
+                  onChange={(e) => setFacebookUrl(e.target.value)}
+                  className="input-field py-2" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">Twitter / X Handle URL</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. https://twitter.com/elevatetech"
+                  value={twitterUrl} 
+                  onChange={(e) => setTwitterUrl(e.target.value)}
+                  className="input-field py-2" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">Instagram Profile URL</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. https://instagram.com/elevatetech"
+                  value={instagramUrl} 
+                  onChange={(e) => setInstagramUrl(e.target.value)}
+                  className="input-field py-2" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">LinkedIn Company URL</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. https://linkedin.com/company/elevate"
+                  value={linkedinUrl} 
+                  onChange={(e) => setLinkedinUrl(e.target.value)}
+                  className="input-field py-2" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">YouTube Channel URL</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. https://youtube.com/@elevatetech"
+                  value={youtubeUrl} 
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  className="input-field py-2" 
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">Official WhatsApp Number / Chat Link</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. 919673391008 or https://wa.me/919673391008"
+                  value={whatsappNumber} 
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  className="input-field py-2 font-mono" 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 5: Customer Support Chatbot Configuration */}
+          <div className="space-y-4">
+            <h3 className="font-bold text-sm text-accent-blue border-b border-slate-100 dark:border-primary-500/30 pb-1">AI Customer Support Chatbot</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="font-semibold">Chatbot Floating Widget Status</span>
+                <select
+                  value={chatbotEnabled}
+                  onChange={(e) => setChatbotEnabled(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 rounded-lg outline-none border border-slate-200 dark:border-primary-500 font-semibold"
+                >
+                  <option value="true">Active (Floating Chat Enabled)</option>
+                  <option value="false">Disabled (Hide Chatbot)</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <span className="font-semibold">Chatbot Welcome Greeting Message</span>
+                <input 
+                  type="text"
+                  placeholder="e.g. Hello! Welcome to Elevate Support. How can we assist you today?"
+                  value={chatbotWelcomeMessage} 
+                  onChange={(e) => setChatbotWelcomeMessage(e.target.value)}
                   className="input-field py-2" 
                 />
               </div>

@@ -21,6 +21,8 @@ import { useToast } from '../utils/ToastContext';
 import { useSettings } from '../utils/SettingsContext';
 import WishlistDrawer from './WishlistDrawer';
 import Logo from '../components/Logo';
+import SocialMediaLinks from '../components/SocialMediaLinks';
+import SupportChatbot from '../components/SupportChatbot';
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -81,10 +83,12 @@ const MainLayout: React.FC = () => {
       <div className="bg-primary-500 text-primary-100 text-xs py-2 px-4 border-b border-primary-400/20 dark:bg-primary-700">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1"><Phone size={12} /> +91 9673391008</span>
-            <span className="flex items-center gap-1"><Mail size={12} /> enterprise@electronics.com</span>
+            <span className="flex items-center gap-1"><Phone size={12} /> {settings.companyPhone || '+91 9673391008'}</span>
+            <span className="flex items-center gap-1"><Mail size={12} /> {settings.companyEmail || 'enterprise@electronics.com'}</span>
           </div>
           <div className="flex items-center gap-4">
+            <SocialMediaLinks size="sm" />
+            <span className="text-white/20">|</span>
             <Link to="/corporate-enquiry" className="hover:text-accent-blue transition-colors">Corporate Enquiry</Link>
             <Link to="/compare" className="hover:text-accent-blue transition-colors">Compare Products</Link>
             <Link to="/billing-software" className="hover:text-accent-blue transition-colors font-medium text-accent-gold">Billing Software</Link>
@@ -339,7 +343,8 @@ const MainLayout: React.FC = () => {
         </div>
 
         <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-slate-200/50 dark:border-primary-500/20 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
-          <span>&copy; {new Date().getFullYear()} {settings.companyName}. All rights reserved. GSTIN: 29AAAAA0000A1Z5</span>
+          <span>&copy; {new Date().getFullYear()} {settings.companyName}. All rights reserved.</span>
+          <SocialMediaLinks size="md" />
           <div className="flex gap-4">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
             <Link to="/terms" className="hover:underline">Terms & Conditions</Link>
@@ -348,6 +353,9 @@ const MainLayout: React.FC = () => {
       </footer>
 
       <WishlistDrawer isOpen={wishlistOpen} onClose={() => setWishlistOpen(false)} />
+      
+      {/* Dynamic AI Support Chatbot Widget */}
+      <SupportChatbot />
     </div>
   );
 };
