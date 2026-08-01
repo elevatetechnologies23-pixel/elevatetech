@@ -81,26 +81,34 @@ const MainLayout: React.FC = () => {
   return (
     <div className={`min-h-screen flex flex-col transition-colors duration-300 ${mode === 'dark' ? 'bg-primary-800 text-primary-50' : 'bg-slate-50 text-primary-500'}`}>
       {/* Top Banner Contact Bar */}
-      <div className="bg-primary-500 text-primary-100 text-xs py-2 px-4 border-b border-primary-400/20 dark:bg-primary-700">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1"><Phone size={12} /> {settings.companyPhone || '+91 9673391008'}</span>
-            <span className="flex items-center gap-1"><Mail size={12} /> {settings.companyEmail || 'enterprise@electronics.com'}</span>
+      <div className="bg-primary-500 text-primary-100 text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-8 border-b border-primary-400/20 dark:bg-primary-700 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-5 sm:gap-6 font-semibold">
+            <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
+              <Phone size={16} className="text-accent-blue" /> {settings.companyPhone || '+91 9673391008'}
+            </span>
+            <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
+              <Mail size={16} className="text-accent-blue" /> {settings.companyEmail || 'enterprise@electronics.com'}
+            </span>
           </div>
-          <div className="flex items-center gap-4">
-            <SocialMediaLinks size="sm" />
-            <span className="text-white/20">|</span>
-            <Link to="/videos" className="hover:text-accent-blue transition-colors font-bold text-accent-blue flex items-center gap-1"><Tv size={12} /> Video Demos</Link>
-            <Link to="/corporate-enquiry" className="hover:text-accent-blue transition-colors">Corporate Enquiry</Link>
-            <Link to="/compare" className="hover:text-accent-blue transition-colors">Compare Products</Link>
-            <Link to="/billing-software" className="hover:text-accent-blue transition-colors font-medium text-accent-gold">Billing Software</Link>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-bold text-xs sm:text-sm">
+            <SocialMediaLinks size="md" />
+            <span className="text-white/30 hidden sm:inline">|</span>
+            <Link to="/videos" className="hover:text-white transition-colors font-extrabold text-accent-blue flex items-center gap-1.5 bg-accent-blue/10 px-3 py-1 rounded-full border border-accent-blue/30">
+              <Tv size={16} /> Video Demos
+            </Link>
+            <Link to="/corporate-enquiry" className="hover:text-white transition-colors">Corporate Enquiry</Link>
+            <Link to="/compare" className="hover:text-white transition-colors">Compare Products</Link>
+            <Link to="/billing-software" className="hover:text-white transition-colors font-extrabold text-accent-gold bg-accent-gold/10 px-3 py-1 rounded-full border border-accent-gold/30">
+              Billing Software
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Main Glassmorphic Header */}
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-primary-600/80 backdrop-blur-md border-b border-slate-200/50 dark:border-primary-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between gap-6 py-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-22 sm:h-24 flex items-center justify-between gap-6 py-3">
 
           {/* Logo */}
           <Link to="/" className="flex items-center group">
