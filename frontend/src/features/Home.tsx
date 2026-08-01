@@ -18,6 +18,7 @@ import {
   Clock,
   ArrowRight,
   ChevronRight,
+  ChevronLeft,
   Heart
 } from 'lucide-react';
 
@@ -28,6 +29,15 @@ const CATEGORIES = [
   { name: 'Networking', icon: Layers, count: '45+ Items' },
 ];
 
+interface BannerSlide {
+  title: string;
+  subtitle?: string;
+  imageUrl?: string;
+  linkUrl?: string;
+  ctaText?: string;
+  bg?: string;
+}
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,7 +46,35 @@ const Home: React.FC = () => {
 
   const wishlist = useSelector((state: RootState) => state.wishlist.items);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>(MOCK_PRODUCTS.filter(p => p.isFeatured));
+  
+  const [bannerSlides, setBannerSlides] = useState<BannerSlide[]>([
+    {
+      title: settings.heroBannerTitle || 'Next-Gen IT Infrastructure Solutions',
+      subtitle: settings.heroBannerSubtitle || 'Premium Enterprise Computers, Networking & Security Systems',
+      ctaText: 'Explore Catalog',
+      linkUrl: '/catalog',
+      bg: 'bg-gradient-to-r from-slate-900 to-primary-500',
+      imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400'
+    },
+    {
+      title: 'Smart CCTV Camera Installations',
+      subtitle: 'Complete Surveillance Solutions for Offices & Warehouses',
+      ctaText: 'Request Free Quote',
+      linkUrl: '/corporate-enquiry',
+      bg: 'bg-gradient-to-r from-blue-900 to-accent-blue',
+      imageUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1400'
+    },
+    {
+      title: 'Advanced POS & Billing Software',
+      subtitle: 'Automate Billing, Inventory Control & GST Filings Easily',
+      ctaText: 'View Software Plans',
+      linkUrl: '/billing-software',
+      bg: 'bg-gradient-to-r from-slate-800 to-accent-gold',
+      imageUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=1400'
+    }
+  ]);
 
   const isInWishlist = (id: string) => wishlist.some(item => (item.id || (item as any)._id) === id);
 
@@ -52,7 +90,27 @@ const Home: React.FC = () => {
     }
   };
 
+  // Fetch dynamic banners from backend API
   useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const res = await api.get('/banners');
+        if (res.data?.data && res.data.data.length > 0) {
+          const apiSlides: BannerSlide[] = res.data.data.map((b: any) => ({
+            title: b.title,
+            subtitle: b.subtitle,
+            imageUrl: b.imageUrl,
+            linkUrl: b.linkUrl || '/catalog',
+            ctaText: b.ctaText || 'Explore Catalog',
+            bg: 'bg-gradient-to-r from-slate-900 to-primary-600'
+          }));
+          setBannerSlides(apiSlides);
+        }
+      } catch (err) {
+        console.warn('Using default hero banners state');
+      }
+    };
+
     const fetchFeatured = async () => {
       try {
         const res = await api.get('/products?isFeatured=true');
@@ -63,50 +121,87 @@ const Home: React.FC = () => {
         console.warn('Failed to load featured products from backend:', err);
       }
     };
-    fetchFeatured();
-  }, []);
 
-  const slides = [
-    {
-      title: settings.heroBannerTitle || 'Next-Gen IT Infrastructure Solutions',
-      subtitle: settings.heroBannerSubtitle || 'Premium Enterprise Computers, Networking & Security Systems',
-      cta: 'Explore Catalog',
-      link: '/catalog',
-      bg: 'bg-gradient-to-r from-slate-900 to-primary-500'
-    },
-    {
-      title: 'Smart CCTV Camera Installations',
-      subtitle: 'Complete Surveillance Solutions for Offices & Warehouses',
-      cta: 'Request Free Quote',
-      link: '/corporate-enquiry',
-      bg: 'bg-gradient-to-r from-blue-900 to-accent-blue'
-    },
-    {
-      title: 'Advanced POS & Billing Software',
-      subtitle: 'Automate Billing, Inventory Control & GST Filings Easily',
-      cta: 'View Pricing Plans',
-      link: '/billing-software',
-      bg: 'bg-gradient-to-r from-slate-800 to-accent-gold'
-    }
-  ];
+    fetchBanners();
+    fetchFeatured();
+  }, [settings]);
+
+  // Auto Banner Slide Timer (5 seconds)
+  useEffect(() => {
+    if (isPaused || bannerSlides.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % bannerSlides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [isPaused, bannerSlides.length]);
+
+  const handlePrevSlide = () => {
+    setActiveSlide((prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length);
+  };
+
+  const handleNextSlide = () => {
+    setActiveSlide((prev) => (prev + 1) % bannerSlides.length);
+  };
 
   return (
     <div className="space-y-16 pb-16">
-      {/* 1. Hero Slider Banner */}
-      <section className="relative overflow-hidden h-[450px]">
-        <div className="absolute inset-0 flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${activeSlide * 100}%)` }}>
-          {slides.map((slide, idx) => (
-            <div key={idx} className={`w-full h-full shrink-0 flex items-center justify-center text-white p-8 md:p-16 ${slide.bg}`}>
-              <div className="max-w-4xl w-full space-y-6 text-left animate-fade-in">
-                <span className="text-xs uppercase tracking-widest text-accent-gold font-bold">{settings.companyName} Solutions</span>
-                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">{slide.title}</h1>
-                <p className="text-sm md:text-lg text-slate-300 max-w-xl">{slide.subtitle}</p>
-                <div className="pt-4 flex gap-4">
-                  <Link to={slide.link} className="btn-primary bg-white text-primary-500 hover:bg-slate-100 font-semibold px-6 py-3 text-sm">
-                    {slide.cta}
+      {/* 1. Hero Slider Banner with Auto-Play & Admin Customization */}
+      <section 
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        className="relative overflow-hidden h-[480px] group rounded-3xl mx-4 sm:mx-6 lg:mx-8 shadow-2xl"
+      >
+        <div 
+          className="absolute inset-0 flex transition-transform duration-700 ease-in-out h-full" 
+          style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+        >
+          {bannerSlides.map((slide, idx) => (
+            <div 
+              key={idx} 
+              className={`w-full h-full shrink-0 relative flex items-center justify-center text-white p-8 md:p-16 ${slide.bg || 'bg-slate-900'}`}
+            >
+              {/* Background Image with Dark Overlay */}
+              {slide.imageUrl && (
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <img 
+                    src={slide.imageUrl} 
+                    alt={slide.title}
+                    className="w-full h-full object-cover opacity-35 scale-105 transition-transform duration-1000"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
+                </div>
+              )}
+
+              {/* Banner Content */}
+              <div className="max-w-4xl w-full space-y-6 text-left relative z-10 animate-fade-in">
+                <span className="text-xs uppercase tracking-widest text-accent-gold font-bold bg-slate-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-accent-gold/20 inline-block">
+                  {settings.companyName || 'Enterprise Electronics'} Official Banner
+                </span>
+                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
+                  {slide.title}
+                </h1>
+                {slide.subtitle && (
+                  <p className="text-sm md:text-lg text-slate-200 max-w-xl leading-relaxed drop-shadow">
+                    {slide.subtitle}
+                  </p>
+                )}
+                <div className="pt-4 flex flex-wrap gap-4">
+                  <Link 
+                    to={slide.linkUrl || '/catalog'} 
+                    className="btn-primary bg-accent-blue hover:bg-accent-blue/90 text-white font-bold px-7 py-3 text-sm rounded-xl shadow-lg shadow-accent-blue/30 flex items-center gap-2"
+                  >
+                    {slide.ctaText || 'Explore Catalog'} <ArrowRight size={16} />
                   </Link>
-                  <Link to="/corporate-enquiry" className="btn-secondary bg-transparent border border-white/30 text-white hover:bg-white/10 px-6 py-3 text-sm">
-                    Contact Sales
+                  <Link 
+                    to="/corporate-enquiry" 
+                    className="btn-secondary bg-white/10 backdrop-blur-md border border-white/30 text-white hover:bg-white/20 px-6 py-3 text-sm font-bold rounded-xl"
+                  >
+                    Contact Enterprise Sales
                   </Link>
                 </div>
               </div>
@@ -114,13 +209,30 @@ const Home: React.FC = () => {
           ))}
         </div>
 
-        {/* Slider dots */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-          {slides.map((_, idx) => (
+        {/* Previous & Next Control Buttons */}
+        <button
+          onClick={handlePrevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-slate-900/40 hover:bg-slate-900/80 backdrop-blur-md text-white border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        <button
+          onClick={handleNextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-slate-900/40 hover:bg-slate-900/80 backdrop-blur-md text-white border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300"
+          aria-label="Next Slide"
+        >
+          <ChevronRight size={20} />
+        </button>
+
+        {/* Slider Indicator Dots */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2.5 bg-slate-900/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+          {bannerSlides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setActiveSlide(idx)}
-              className={`w-3 h-3 rounded-full transition-all ${activeSlide === idx ? 'bg-white scale-125' : 'bg-white/40'}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${activeSlide === idx ? 'w-8 bg-accent-blue' : 'w-2.5 bg-white/40 hover:bg-white/70'}`}
               aria-label={`Slide ${idx + 1}`}
             />
           ))}

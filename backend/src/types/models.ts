@@ -253,8 +253,11 @@ export interface IBanner extends Document {
   subtitle?: string;
   imageUrl: string;
   linkUrl?: string;
+  ctaText?: string;
   order: number;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Notification models

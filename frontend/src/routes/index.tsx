@@ -31,6 +31,7 @@ import AdminEmployees from '../features/admin/AdminEmployees';
 import AdminUsers from '../features/admin/AdminUsers';
 import AdminLogs from '../features/admin/AdminLogs';
 import AdminSettings from '../features/admin/AdminSettings';
+import AdminBanners from '../features/admin/AdminBanners';
 import AdminLogin from '../features/admin/AdminLogin';
 import EmployeeLogin from '../features/admin/EmployeeLogin';
 import AdminRegister from '../features/admin/AdminRegister';
@@ -105,6 +106,7 @@ const AppRoutes: React.FC = () => {
         <Route path="tickets" element={<AdminTickets />} />
         <Route path="employees" element={<AdminEmployees />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="banners" element={<AdminBanners />} />
         <Route path="logs" element={<AdminLogs />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>

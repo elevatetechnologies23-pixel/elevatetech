@@ -6,6 +6,7 @@ const bannerSchema = new Schema<IBanner>({
   subtitle: String,
   imageUrl: { type: String, required: true },
   linkUrl: String,
+  ctaText: { type: String, default: 'Explore Now' },
   order: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }
 }, {

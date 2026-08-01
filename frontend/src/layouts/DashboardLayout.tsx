@@ -27,7 +27,8 @@ import {
   Bell,
   CheckCheck,
   Package,
-  Ticket
+  Ticket,
+  Image
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -71,6 +72,7 @@ const DashboardLayout: React.FC = () => {
   // Admin-only Dashboard Links
   if (user?.role === 'admin') {
     sidebarLinks.push(
+      { name: 'Banner Sliders', path: '/admin/banners', icon: Image },
       { name: 'Staff Management', path: '/admin/employees', icon: ShieldCheck },
       { name: 'User Management', path: '/admin/users', icon: Users },
       { name: 'Audit Logs', path: '/admin/logs', icon: History },
