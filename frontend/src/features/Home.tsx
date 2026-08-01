@@ -296,12 +296,12 @@ const Home: React.FC = () => {
                 {/* Background Ambient Glow */}
                 <div className={`absolute -top-12 -right-12 w-28 h-28 rounded-full bg-gradient-to-br ${cat.gradient} opacity-10 group-hover:opacity-25 blur-xl transition-all duration-500`} />
 
-                {/* 3D Icon Container */}
-                <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center mb-5 ${cat.shadow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative border border-white/30 backdrop-blur-md`}>
+                {/* 3D Medium Icon Container */}
+                <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center mb-4 ${cat.shadow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative border border-white/30 backdrop-blur-md`}>
                   {/* Glossy 3D Highlight Curve */}
-                  <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-3xl pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-2xl pointer-events-none" />
                   
-                  <Icon size={42} className="drop-shadow-[0_6px_10px_rgba(0,0,0,0.35)] transform group-hover:scale-105 transition-transform duration-300" />
+                  <Icon size={28} className="drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] transform group-hover:scale-105 transition-transform duration-300" />
                 </div>
 
                 <h3 className="font-extrabold text-base md:text-lg text-slate-800 dark:text-slate-100 group-hover:text-accent-blue transition-colors">
@@ -580,12 +580,12 @@ const Home: React.FC = () => {
                 {/* Background Ambient Glow */}
                 <div className={`absolute -top-8 -right-8 w-20 h-20 rounded-full bg-gradient-to-br ${industry.gradient} opacity-10 group-hover:opacity-25 blur-lg transition-all duration-500`} />
 
-                {/* 3D Icon Container Badge */}
-                <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br ${industry.gradient} text-white flex items-center justify-center mb-3.5 ${industry.shadow} group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative border border-white/30 backdrop-blur-md shrink-0`}>
+                {/* 3D Medium Icon Container Badge */}
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${industry.gradient} text-white flex items-center justify-center mb-3 ${industry.shadow} group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative border border-white/30 backdrop-blur-md shrink-0`}>
                   {/* Glossy 3D Highlight Curve */}
-                  <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-2xl sm:rounded-t-3xl pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-2xl pointer-events-none" />
 
-                  <span className="text-3xl sm:text-4xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] transform group-hover:scale-105 transition-transform duration-300 relative z-10">
+                  <span className="text-2xl sm:text-3xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] transform group-hover:scale-105 transition-transform duration-300 relative z-10">
                     {industry.icon}
                   </span>
                 </div>
