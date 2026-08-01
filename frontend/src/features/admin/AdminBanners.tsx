@@ -53,41 +53,7 @@ const AdminBanners: React.FC = () => {
         setBanners(res.data.data);
       }
     } catch {
-      console.warn('API error fetching admin banners, using local fallback');
-      if (banners.length === 0) {
-        setBanners([
-          {
-            _id: 'b-1',
-            title: 'Next-Gen IT Infrastructure Solutions',
-            subtitle: 'Premium Enterprise Computers, Networking & Security Systems',
-            imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200',
-            linkUrl: '/catalog',
-            ctaText: 'Explore Catalog',
-            order: 1,
-            isActive: true
-          },
-          {
-            _id: 'b-2',
-            title: 'Smart CCTV Surveillance & Security',
-            subtitle: 'Complete IP Cameras & Storage Installation for Enterprises',
-            imageUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1200',
-            linkUrl: '/corporate-enquiry',
-            ctaText: 'Request Free Quote',
-            order: 2,
-            isActive: true
-          },
-          {
-            _id: 'b-3',
-            title: 'Advanced POS & GST Billing Software',
-            subtitle: 'Automate Billing, Inventory Control & Multi-Store Management',
-            imageUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=1200',
-            linkUrl: '/billing-software',
-            ctaText: 'View Software Plans',
-            order: 3,
-            isActive: true
-          }
-        ]);
-      }
+      console.warn('API error fetching admin banners');
     } finally {
       setIsLoading(false);
     }

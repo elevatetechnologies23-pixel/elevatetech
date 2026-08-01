@@ -23,7 +23,7 @@ const Catalog: React.FC = () => {
   
   // States
   const wishlist = useSelector((state: RootState) => state.wishlist.items);
-  const [products, setProducts] = useState<ProductItem[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<ProductItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 

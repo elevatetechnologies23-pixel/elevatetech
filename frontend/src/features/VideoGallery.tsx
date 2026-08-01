@@ -22,38 +22,8 @@ interface VideoItem {
   order?: number;
 }
 
-const DEFAULT_VIDEOS: VideoItem[] = [
-  {
-    _id: 'v1',
-    title: 'Elevate POS & GST Billing Software Live Demo',
-    description: 'Watch how our billing software handles instant barcode scanning, Thermal invoice printing, multi-counter database synchronization, and automated GST ledger exports.',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=1000',
-    category: 'POS Billing Tutorial',
-    isFeatured: true
-  },
-  {
-    _id: 'v2',
-    title: 'Enterprise CCTV Camera IP Installation & Setup Guide',
-    description: 'Complete walkthrough of installing IP Cameras, NVR storage units, remote mobile surveillance monitoring, and motion alerts.',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1000',
-    category: 'CCTV Security Overview',
-    isFeatured: true
-  },
-  {
-    _id: 'v3',
-    title: 'ThinkPad Workstation & Cisco Networking Unboxing',
-    description: 'Corporate hardware inspection of B2B laptop procurement, Cisco switches, and rack server configurations.',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000',
-    category: 'Enterprise Hardware Unboxing',
-    isFeatured: false
-  }
-];
-
 const VideoGallery: React.FC = () => {
-  const [videos, setVideos] = useState<VideoItem[]>(DEFAULT_VIDEOS);
+  const [videos, setVideos] = useState<VideoItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [playingVideoUrl, setPlayingVideoUrl] = useState<string | null>(null);

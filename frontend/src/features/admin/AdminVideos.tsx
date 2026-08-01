@@ -82,44 +82,7 @@ const AdminVideos: React.FC = () => {
         setVideos(res.data.data);
       }
     } catch {
-      console.warn('API error fetching admin videos, using local fallback');
-      if (videos.length === 0) {
-        setVideos([
-          {
-            _id: 'vid-1',
-            title: 'Elevate POS & GST Billing Software Live Demo',
-            description: 'Complete walkthrough of inventory management, thermal printing, and GST returns filing.',
-            videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            thumbnailUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=800',
-            category: 'POS Billing Tutorial',
-            isFeatured: true,
-            isActive: true,
-            order: 1
-          },
-          {
-            _id: 'vid-2',
-            title: 'Enterprise CCTV Camera IP Installation Walkthrough',
-            description: 'Step by step guide on installing 4K IP cameras, NVR storage units, and mobile remote monitoring.',
-            videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            thumbnailUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800',
-            category: 'CCTV Security Overview',
-            isFeatured: true,
-            isActive: true,
-            order: 2
-          },
-          {
-            _id: 'vid-3',
-            title: 'ThinkPad Laptop & Server Rack Unboxing',
-            description: 'Enterprise procurement inspection of ThinkPad laptops and Cisco networking switches.',
-            videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800',
-            category: 'Enterprise Hardware Unboxing',
-            isFeatured: false,
-            isActive: true,
-            order: 3
-          }
-        ]);
-      }
+      console.warn('API error fetching admin videos');
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { MOCK_PRODUCTS } from '../utils/mockData';
 import api from '../services/api';
 import type { ProductItem } from '../utils/mockData';
 import type { RootState } from '../store';
@@ -78,53 +77,9 @@ const Home: React.FC = () => {
   const wishlist = useSelector((state: RootState) => state.wishlist.items);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>(MOCK_PRODUCTS.filter(p => p.isFeatured));
-  
-  const [bannerSlides, setBannerSlides] = useState<BannerSlide[]>([
-    {
-      title: settings.heroBannerTitle || 'Next-Gen IT Infrastructure Solutions',
-      subtitle: settings.heroBannerSubtitle || 'Premium Enterprise Computers, Networking & Security Systems',
-      ctaText: 'Explore Catalog',
-      linkUrl: '/catalog',
-      bg: 'bg-gradient-to-r from-slate-900 to-primary-500',
-      imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400'
-    },
-    {
-      title: 'Smart CCTV Camera Installations',
-      subtitle: 'Complete Surveillance Solutions for Offices & Warehouses',
-      ctaText: 'Request Free Quote',
-      linkUrl: '/corporate-enquiry',
-      bg: 'bg-gradient-to-r from-blue-900 to-accent-blue',
-      imageUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1400'
-    },
-    {
-      title: 'Advanced POS & Billing Software',
-      subtitle: 'Automate Billing, Inventory Control & GST Filings Easily',
-      ctaText: 'View Software Plans',
-      linkUrl: '/billing-software',
-      bg: 'bg-gradient-to-r from-slate-800 to-accent-gold',
-      imageUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=1400'
-    }
-  ]);
-
-  const [featuredVideos, setFeaturedVideos] = useState<any[]>([
-    {
-      _id: 'fv1',
-      title: 'Elevate POS & GST Billing Software Live Demo',
-      description: 'Watch how our billing software handles instant barcode scanning, Thermal invoice printing, multi-counter database sync, and GST return exports.',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1556742049-0a67daf4005a?w=1000',
-      category: 'POS Billing Tutorial'
-    },
-    {
-      _id: 'fv2',
-      title: 'Enterprise CCTV Camera IP Installation & Setup Guide',
-      description: 'Complete walkthrough of installing IP Cameras, NVR storage units, remote mobile monitoring, and motion alerts.',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1000',
-      category: 'CCTV Security Overview'
-    }
-  ]);
+  const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>([]);
+  const [bannerSlides, setBannerSlides] = useState<BannerSlide[]>([]);
+  const [featuredVideos, setFeaturedVideos] = useState<any[]>([]);
   const [activePlayingVideo, setActivePlayingVideo] = useState<string | null>(null);
 
   const isInWishlist = (id: string) => wishlist.some(item => (item.id || (item as any)._id) === id);
