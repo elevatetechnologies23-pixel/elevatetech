@@ -474,3 +474,102 @@ export const getProductReviews = async (req: Request, res: Response, next: NextF
     next(error);
   }
 };
+
+// Get Public Testimonials for Homepage
+export const getPublicTestimonials = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    let testimonials = await Review.find({ isFeatured: true }).populate('user', 'name').sort({ createdAt: -1 });
+
+    // Seed default partner testimonials if none exist in database
+    if (testimonials.length === 0) {
+      const defaults = [
+        {
+          name: 'Rajesh Kumar',
+          designation: 'Director, K-Retail Chains',
+          rating: 5,
+          comment: 'We migrated all our branch accounting to Enterprise Billing Software. The POS printing configuration works seamlessly, and our compliance logs are fully automated now.',
+          isFeatured: true
+        },
+        {
+          name: 'Sneha Sharma',
+          designation: 'Head of Security, Zenith TechLabs',
+          rating: 5,
+          comment: 'Purchased dome and bullet CCTV systems for our 3-floor facility. Excellent day/night video resolution. The support team configured our remote mobile monitoring within 2 hours.',
+          isFeatured: true
+        },
+        {
+          name: 'Arjun Patel',
+          designation: 'Chief Information Officer, Alpha Solutions',
+          rating: 5,
+          comment: 'Outstanding procurement experience. Ordered 15 ThinkPad laptops and Cisco switches. The bulk pricing discount we received was unmatched. Standardizing on Elevate Technology.',
+          isFeatured: true
+        }
+      ];
+      testimonials = await Review.insertMany(defaults);
+    }
+
+    res.status(200).json({
+      status: 'success',
+      results: testimonials.length,
+      data: testimonials
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin Testimonials List
+export const getAdminTestimonials = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const testimonials = await Review.find().populate('user', 'name email').populate('product', 'name').sort({ createdAt: -1 });
+    res.status(200).json({
+      status: 'success',
+      results: testimonials.length,
+      data: testimonials
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin Create Testimonial
+export const createAdminTestimonial = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, designation, rating, comment, isFeatured } = req.body;
+    if (!comment || !rating) {
+      return next(new AppError('Rating and Comment are required', 400));
+    }
+    const testimonial = await Review.create({
+      name: name || 'Valued Partner',
+      designation: designation || 'Business Client',
+      rating: Number(rating),
+      comment,
+      isFeatured: isFeatured ?? true
+    });
+    res.status(201).json({ status: 'success', data: testimonial });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin Update Testimonial
+export const updateAdminTestimonial = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const testimonial = await Review.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!testimonial) return next(new AppError('Testimonial not found', 404));
+    res.status(200).json({ status: 'success', data: testimonial });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin Delete Testimonial
+export const deleteAdminTestimonial = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const testimonial = await Review.findByIdAndDelete(req.params.id);
+    if (!testimonial) return next(new AppError('Testimonial not found', 404));
+    res.status(200).json({ status: 'success', message: 'Testimonial deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -157,12 +157,15 @@ export interface IOrder extends Document {
   updatedAt: Date;
 }
 
-// Reviews types
+// Reviews & Partner Testimonials types
 export interface IReview extends Document {
-  user: Types.ObjectId;
-  product: Types.ObjectId;
+  user?: Types.ObjectId;
+  product?: Types.ObjectId;
+  name?: string;
+  designation?: string;
   rating: number; // 1-5
   comment: string;
+  isFeatured?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -96,7 +96,9 @@ const Home: React.FC = () => {
     }
   };
 
-  // Fetch dynamic banners & videos from backend API
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+
+  // Fetch dynamic banners, videos, products & testimonials from backend API
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -139,9 +141,21 @@ const Home: React.FC = () => {
       }
     };
 
+    const fetchTestimonials = async () => {
+      try {
+        const res = await api.get('/products/testimonials/public');
+        if (res.data?.data) {
+          setTestimonials(res.data.data);
+        }
+      } catch (err) {
+        console.warn('Failed to load partner testimonials:', err);
+      }
+    };
+
     fetchBanners();
     fetchVideos();
     fetchFeatured();
+    fetchTestimonials();
   }, [settings]);
 
   // Auto Banner Slide Timer (5 seconds)
@@ -638,7 +652,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Customer Testimonials */}
+      {/* Customer Testimonials (Dynamically Loaded from Backend Database API) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">What Our Partners Say</h2>
@@ -646,54 +660,32 @@ const Home: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <div className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30">
-            <div className="flex text-yellow-400">
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
+          {testimonials.map((t, index) => (
+            <div key={t._id || t.id || index} className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex text-yellow-400">
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <Star
+                      key={idx}
+                      size={16}
+                      className={idx < (t.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300 dark:text-slate-600'}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
+                  "{t.comment}"
+                </p>
+              </div>
+              <div className="pt-2 border-t border-slate-100 dark:border-primary-500/20">
+                <p className="font-extrabold text-xs sm:text-sm text-primary-500 dark:text-primary-50">
+                  {t.name || t.user?.name || 'Verified Client'}
+                </p>
+                <p className="text-[10px] sm:text-xs text-slate-400">
+                  {t.designation || 'Enterprise Partner'}
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
-              "We migrated all our branch accounting to Enterprise Billing Software. The POS printing configuration works seamlessly, and our compliance logs are fully automated now."
-            </p>
-            <div>
-              <p className="font-bold text-xs sm:text-sm text-primary-500 dark:text-primary-50">Rajesh Kumar</p>
-              <p className="text-[10px] sm:text-xs text-slate-400">Director, K-Retail Chains</p>
-            </div>
-          </div>
-          <div className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30">
-            <div className="flex text-yellow-400">
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
-              "Purchased dome and bullet CCTV systems for our 3-floor facility. Excellent day/night video resolution. The support team configured our remote mobile monitoring within 2 hours."
-            </p>
-            <div>
-              <p className="font-bold text-xs sm:text-sm text-primary-500 dark:text-primary-50">Sneha Sharma</p>
-              <p className="text-[10px] sm:text-xs text-slate-400">Head of Security, Zenith TechLabs</p>
-            </div>
-          </div>
-          <div className="glass-card p-6 space-y-4 rounded-3xl border border-slate-200/60 dark:border-primary-500/30">
-            <div className="flex text-yellow-400">
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-              <Star size={16} className="fill-current" />
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-300 italic leading-relaxed">
-              "Outstanding procurement experience. Ordered 15 ThinkPad laptops and Cisco switches. The bulk pricing discount we received was unmatched. Standardizing on Elevate Technology."
-            </p>
-            <div>
-              <p className="font-bold text-xs sm:text-sm text-primary-500 dark:text-primary-50">Arjun Patel</p>
-              <p className="text-[10px] sm:text-xs text-slate-400">Chief Information Officer, Alpha Solutions</p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>

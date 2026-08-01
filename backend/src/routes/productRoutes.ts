@@ -14,7 +14,12 @@ import {
   updateBrand,
   deleteBrand,
   createProductReview,
-  getProductReviews
+  getProductReviews,
+  getPublicTestimonials,
+  getAdminTestimonials,
+  createAdminTestimonial,
+  updateAdminTestimonial,
+  deleteAdminTestimonial
 } from '../controllers/productController';
 import { protect, restrictTo } from '../middlewares/auth';
 
@@ -24,8 +29,15 @@ const router = Router();
 router.get('/', getAllProducts);
 router.get('/categories', getCategories);
 router.get('/brands', getBrands);
+router.get('/testimonials/public', getPublicTestimonials);
 router.get('/:id', getProductById);
 router.get('/:id/reviews', getProductReviews);
+
+// Admin Testimonial routes
+router.get('/testimonials/admin-list', protect, restrictTo('admin', 'employee'), getAdminTestimonials);
+router.post('/testimonials', protect, restrictTo('admin'), createAdminTestimonial);
+router.put('/testimonials/:id', protect, restrictTo('admin'), updateAdminTestimonial);
+router.delete('/testimonials/:id', protect, restrictTo('admin'), deleteAdminTestimonial);
 
 // Protected routes (Admin & Employee write actions)
 router.post('/', protect, restrictTo('admin', 'employee'), createProduct);

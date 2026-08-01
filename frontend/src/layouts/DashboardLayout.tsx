@@ -30,7 +30,8 @@ import {
   Package,
   Ticket,
   Image,
-  Video
+  Video,
+  MessageSquare
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -76,6 +77,7 @@ const DashboardLayout: React.FC = () => {
     sidebarLinks.push(
       { name: 'Banner Sliders', path: '/admin/banners', icon: Image },
       { name: 'Video Demos', path: '/admin/videos', icon: Video },
+      { name: 'Partner Reviews', path: '/admin/reviews', icon: MessageSquare },
       { name: 'Staff Management', path: '/admin/employees', icon: ShieldCheck },
       { name: 'User Management', path: '/admin/users', icon: Users },
       { name: 'Audit Logs', path: '/admin/logs', icon: History },
