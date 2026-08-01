@@ -31,7 +31,8 @@ import {
   Ticket,
   Image,
   Video,
-  MessageSquare
+  MessageSquare,
+  Cpu
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -75,6 +76,7 @@ const DashboardLayout: React.FC = () => {
   // Admin-only Dashboard Links
   if (user?.role === 'admin') {
     sidebarLinks.push(
+      { name: 'Billing Software', path: '/admin/billing-software', icon: Cpu },
       { name: 'Banner Sliders', path: '/admin/banners', icon: Image },
       { name: 'Video Demos', path: '/admin/videos', icon: Video },
       { name: 'Partner Reviews', path: '/admin/reviews', icon: MessageSquare },

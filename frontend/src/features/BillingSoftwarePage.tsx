@@ -145,6 +145,16 @@ const BillingSoftwarePage: React.FC = () => {
     }
   };
 
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const categories = ['All', 'Retail POS', 'Restaurant & F&B', 'Pharma & Medical', 'Wholesale & ERP', 'Auto Parts Billing', 'Garments & Apparel'];
+
+  const filteredPlans = softwarePlans.filter(plan => {
+    if (selectedCategory === 'All') return true;
+    const planType = plan.softwareType || (plan.features ? plan.features.find((f: string) => f.startsWith('Type:'))?.split(': ')[1] : '');
+    return planType === selectedCategory || plan.name.toLowerCase().includes(selectedCategory.toLowerCase());
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
       
@@ -159,14 +169,30 @@ const BillingSoftwarePage: React.FC = () => {
 
       {/* Pricing Grid */}
       <section className="space-y-8">
-        <h2 className="text-xl font-bold text-center">Select Software License Plan</h2>
+        <div className="text-center space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold">Select Software License Plan</h2>
+          
+          {/* Software Category Filter Tabs */}
+          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 text-xs font-semibold">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-full transition-all shrink-0 border ${selectedCategory === cat ? 'bg-accent-blue text-white border-accent-blue shadow-md shadow-accent-blue/20 font-extrabold' : 'bg-white dark:bg-primary-700 text-slate-500 border-slate-200/60 dark:border-primary-500/30 hover:border-accent-blue/40'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {isLoadingPlans ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-8 h-8 border-4 border-accent-blue border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {softwarePlans.map((plan) => (
+            {filteredPlans.map((plan) => (
               <div 
                 key={plan.id || plan.name}
                 className={`glass-card p-6 flex flex-col justify-between relative ${plan.popular ? 'border-2 border-accent-blue scale-105 shadow-lg' : ''}`}
