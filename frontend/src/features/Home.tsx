@@ -23,10 +23,38 @@ import {
 } from 'lucide-react';
 
 const CATEGORIES = [
-  { name: 'Laptop', icon: Laptop, count: '15+ Models' },
-  { name: 'CCTV Camera', icon: ShieldCheck, count: '30+ Models' },
-  { name: 'Billing Software', icon: Settings, count: '3 Versions' },
-  { name: 'Networking', icon: Layers, count: '45+ Items' },
+  { 
+    name: 'Laptop & Workstations', 
+    categoryQuery: 'Laptop',
+    icon: Laptop, 
+    count: '15+ Enterprise Models',
+    gradient: 'from-blue-500 via-indigo-500 to-blue-700',
+    shadow: 'shadow-[0_12px_30px_rgba(37,99,235,0.35)] dark:shadow-[0_14px_35px_rgba(37,99,235,0.5)]'
+  },
+  { 
+    name: 'CCTV & Security', 
+    categoryQuery: 'CCTV Camera',
+    icon: ShieldCheck, 
+    count: '30+ IP Camera Models',
+    gradient: 'from-emerald-500 via-teal-500 to-emerald-700',
+    shadow: 'shadow-[0_12px_30px_rgba(16,185,129,0.35)] dark:shadow-[0_14px_35px_rgba(16,185,129,0.5)]'
+  },
+  { 
+    name: 'Billing & POS Software', 
+    categoryQuery: 'Billing Software',
+    icon: Settings, 
+    count: '3 Edition Licenses',
+    gradient: 'from-amber-500 via-orange-500 to-amber-700',
+    shadow: 'shadow-[0_12px_30px_rgba(245,158,11,0.35)] dark:shadow-[0_14px_35px_rgba(245,158,11,0.5)]'
+  },
+  { 
+    name: 'Networking & Servers', 
+    categoryQuery: 'Networking',
+    icon: Layers, 
+    count: '45+ Enterprise Racks',
+    gradient: 'from-purple-500 via-violet-500 to-indigo-700',
+    shadow: 'shadow-[0_12px_30px_rgba(139,92,246,0.35)] dark:shadow-[0_14px_35px_rgba(139,92,246,0.5)]'
+  },
 ];
 
 interface BannerSlide {
@@ -243,28 +271,41 @@ const Home: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Browse by Category</h2>
-            <p className="text-sm text-slate-400">Curated hardware and software solutions for your operations.</p>
+            <span className="text-xs uppercase tracking-widest text-accent-blue font-extrabold block mb-1">Interactive Catalog</span>
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Browse by Category</h2>
+            <p className="text-sm text-slate-400 mt-1">Explore our high-performance hardware and software solutions.</p>
           </div>
-          <Link to="/catalog" className="text-accent-blue text-sm font-semibold flex items-center gap-1 hover:underline">
+          <Link to="/catalog" className="text-accent-blue text-sm font-bold flex items-center gap-1 hover:underline">
             All Categories <ChevronRight size={16} />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             return (
               <div
                 key={cat.name}
-                onClick={() => navigate(`/catalog?category=${encodeURIComponent(cat.name)}`)}
-                className="glass-card p-6 flex flex-col items-center text-center cursor-pointer hover:shadow-md hover:scale-105 transition-all duration-300"
+                onClick={() => navigate(`/catalog?category=${encodeURIComponent(cat.categoryQuery || cat.name)}`)}
+                className="glass-card p-6 md:p-8 flex flex-col items-center text-center cursor-pointer rounded-3xl border border-slate-200/60 dark:border-primary-500/30 hover:border-accent-blue/40 shadow-lg hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group relative overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-2xl bg-accent-blue/10 dark:bg-primary-500 text-accent-blue flex items-center justify-center mb-4">
-                  <Icon size={24} />
+                {/* Background Ambient Glow */}
+                <div className={`absolute -top-12 -right-12 w-28 h-28 rounded-full bg-gradient-to-br ${cat.gradient} opacity-10 group-hover:opacity-25 blur-xl transition-all duration-500`} />
+
+                {/* 3D Icon Container */}
+                <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center mb-5 ${cat.shadow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative border border-white/30 backdrop-blur-md`}>
+                  {/* Glossy 3D Highlight Curve */}
+                  <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-3xl pointer-events-none" />
+                  
+                  <Icon size={42} className="drop-shadow-[0_6px_10px_rgba(0,0,0,0.35)] transform group-hover:scale-105 transition-transform duration-300" />
                 </div>
-                <h3 className="font-semibold text-sm">{cat.name}</h3>
-                <span className="text-xs text-slate-400 mt-1">{cat.count}</span>
+
+                <h3 className="font-extrabold text-base md:text-lg text-slate-800 dark:text-slate-100 group-hover:text-accent-blue transition-colors">
+                  {cat.name}
+                </h3>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-300 mt-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-primary-600/60">
+                  {cat.count}
+                </span>
               </div>
             );
           })}
