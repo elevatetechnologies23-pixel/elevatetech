@@ -14,6 +14,7 @@ import adminRoutes from './routes/adminRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import bannerRoutes from './routes/bannerRoutes';
 import videoRoutes from './routes/videoRoutes';
+import demoRoutes from './routes/demoRoutes';
 
 // Custom interfaces & classes
 class AppError extends Error {
@@ -103,6 +104,7 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/banners', bannerRoutes);
 app.use('/api/v1/videos', videoRoutes);
+app.use('/api/v1/demos', demoRoutes);
 
 // 7. Handle Undefined Routes
 app.all('*', (req: Request, _res: Response, next: NextFunction): void => {

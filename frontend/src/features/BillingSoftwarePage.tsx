@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import { useSettings } from '../utils/SettingsContext';
+import ROICalculator from '../components/ROICalculator';
 
 const PLANS = [
   {
@@ -236,6 +237,11 @@ const BillingSoftwarePage: React.FC = () => {
             ))}
           </div>
         )}
+      </section>
+
+      {/* ROI & Savings Calculator */}
+      <section>
+        <ROICalculator />
       </section>
 
       {/* Online License Activation Portal */}

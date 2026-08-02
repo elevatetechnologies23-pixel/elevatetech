@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import SupportTicket from '../models/SupportTicket';
+import User from '../models/User';
 import { AppError } from '../app';
 import { notifyAdmins, notifyUser } from '../utils/notifications';
+import { sendTicketReplyEmail } from '../utils/emailService';
 
 export const createTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -124,6 +126,18 @@ export const addTicketMessage = async (req: Request, res: Response, next: NextFu
         `A staff member replied to your support ticket ${ticket.ticketNumber} — "${ticket.subject}"`,
         '/dashboard'
       );
+
+      // Asynchronously dispatch automated email notification
+      (async () => {
+        try {
+          const customerUser = await User.findById(ticket.user);
+          if (customerUser && customerUser.email) {
+            await sendTicketReplyEmail(customerUser.email, customerUser.name, ticket.subject, message);
+          }
+        } catch (e) {
+          console.warn('Could not dispatch ticket reply email:', e);
+        }
+      })();
     }
 
     res.status(200).json({

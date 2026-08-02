@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import License from '../models/License';
+import User from '../models/User';
 import AuditLog from '../models/AuditLog';
 import { AppError } from '../app';
+import { sendLicenseKeyEmail } from '../utils/emailService';
 
 export const validateLicense = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -128,6 +130,18 @@ export const createLicense = async (req: Request, res: Response, next: NextFunct
       action: 'LICENSE_CREATE',
       details: `Created license key ${license.licenseKey} for ${license.productName}`
     });
+
+    // Asynchronously dispatch automated email notification
+    (async () => {
+      try {
+        const assignedUser = await User.findById(license.assignedTo);
+        if (assignedUser && assignedUser.email) {
+          await sendLicenseKeyEmail(assignedUser.email, assignedUser.name, license.licenseKey, license.productName, license.validUntil);
+        }
+      } catch (e) {
+        console.warn('Could not dispatch license email:', e);
+      }
+    })();
 
     res.status(201).json({
       status: 'success',

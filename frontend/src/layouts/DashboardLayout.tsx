@@ -32,7 +32,8 @@ import {
   Image,
   Video,
   MessageSquare,
-  Cpu
+  Cpu,
+  Calendar
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -77,6 +78,7 @@ const DashboardLayout: React.FC = () => {
   if (user?.role === 'admin') {
     sidebarLinks.push(
       { name: 'Billing Software', path: '/admin/billing-software', icon: Cpu },
+      { name: 'Demo Bookings', path: '/admin/demos', icon: Calendar },
       { name: 'Banner Sliders', path: '/admin/banners', icon: Image },
       { name: 'Video Demos', path: '/admin/videos', icon: Video },
       { name: 'Partner Reviews', path: '/admin/reviews', icon: MessageSquare },

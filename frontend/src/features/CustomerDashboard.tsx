@@ -16,9 +16,11 @@ import {
   AlertTriangle,
   X,
   Bell,
-  CheckCheck
+  CheckCheck,
+  MessageSquare
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
+import { shareLicenseOnWhatsApp, shareInvoiceOnWhatsApp, shareTicketOnWhatsApp } from '../utils/whatsappService';
 
 const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -556,6 +558,13 @@ const CustomerDashboard: React.FC = () => {
                           {cancelLoading === (ord._id || ord.id) ? 'Cancelling...' : 'Cancel Order'}
                         </button>
                       )}
+                      <button
+                        onClick={() => shareInvoiceOnWhatsApp((user as any)?.phone, ord.orderNumber, ord.grandTotal)}
+                        className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border border-emerald-500/20"
+                        title="Share Tax Invoice on WhatsApp"
+                      >
+                        <MessageSquare size={14} /> WhatsApp Invoice
+                      </button>
                       <button
                         onClick={() => downloadMockInvoice(ord.orderNumber)}
                         className="btn-secondary py-2 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5"

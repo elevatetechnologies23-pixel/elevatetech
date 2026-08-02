@@ -16,13 +16,15 @@ import {
   Mail,
   MapPin,
   Heart,
-  Tv
+  Tv,
+  Calendar
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
 import { useSettings } from '../utils/SettingsContext';
 import WishlistDrawer from './WishlistDrawer';
 import Logo from '../components/Logo';
 import SocialMediaLinks from '../components/SocialMediaLinks';
+import BookDemoModal from '../features/BookDemoModal';
 import SupportChatbot from '../components/SupportChatbot';
 
 const MainLayout: React.FC = () => {
@@ -38,6 +40,7 @@ const MainLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [isBookDemoOpen, setIsBookDemoOpen] = useState(false);
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
   const toast = useToast();
 
@@ -94,9 +97,12 @@ const MainLayout: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 font-semibold text-xs">
             <SocialMediaLinks size="sm" />
             <span className="text-white/30 hidden sm:inline">|</span>
-            <Link to="/videos" className="hover:text-white transition-colors font-extrabold text-accent-blue flex items-center gap-1 bg-accent-blue/15 px-2.5 py-0.5 rounded-full border border-accent-blue/30">
-              <Tv size={13} /> Video Demos
-            </Link>
+            <button 
+              onClick={() => setIsBookDemoOpen(true)}
+              className="hover:text-white transition-colors font-extrabold text-green-400 flex items-center gap-1 bg-green-500/15 px-2.5 py-0.5 rounded-full border border-green-500/30 cursor-pointer"
+            >
+              <Calendar size={13} /> Book 1-on-1 Demo
+            </button>
             <Link to="/corporate-enquiry" className="hover:text-white transition-colors">Corporate Enquiry</Link>
             <Link to="/compare" className="hover:text-white transition-colors">Compare Products</Link>
             <Link to="/billing-software" className="hover:text-white transition-colors font-extrabold text-accent-gold bg-accent-gold/15 px-2.5 py-0.5 rounded-full border border-accent-gold/30">
@@ -366,6 +372,9 @@ const MainLayout: React.FC = () => {
 
       <WishlistDrawer isOpen={wishlistOpen} onClose={() => setWishlistOpen(false)} />
       
+      {/* Book Live Demo Modal */}
+      <BookDemoModal isOpen={isBookDemoOpen} onClose={() => setIsBookDemoOpen(false)} />
+
       {/* Dynamic AI Support Chatbot Widget */}
       <SupportChatbot />
     </div>

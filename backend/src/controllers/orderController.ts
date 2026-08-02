@@ -4,8 +4,10 @@ import Product from '../models/Product';
 import Coupon from '../models/Coupon';
 import AuditLog from '../models/AuditLog';
 import License from '../models/License';
+import User from '../models/User';
 import { AppError } from '../app';
 import { notifyAdmins, notifyUser } from '../utils/notifications';
+import { sendOrderStatusEmail } from '../utils/emailService';
 
 export const createOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -234,6 +236,20 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
       `Your order ${order.orderNumber} status has been updated to "${status}".`,
       '/dashboard'
     );
+
+    // Asynchronously dispatch automated email notification
+    (async () => {
+      try {
+        const orderUser = await User.findById(order.user);
+        const recipientEmail = order.email || orderUser?.email;
+        const recipientName = orderUser?.name || 'Valued Customer';
+        if (recipientEmail) {
+          await sendOrderStatusEmail(recipientEmail, recipientName, order.orderNumber, status, order.grandTotal);
+        }
+      } catch (e) {
+        console.warn('Could not dispatch order email:', e);
+      }
+    })();
 
     res.status(200).json({
       status: 'success',
