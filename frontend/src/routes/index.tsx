@@ -19,6 +19,7 @@ import BillingSoftwarePage from '../features/BillingSoftwarePage';
 import VideoGallery from '../features/VideoGallery';
 import Login from '../features/Login';
 import Register from '../features/Register';
+import ForgotPassword from '../features/ForgotPassword';
 import CustomerDashboard from '../features/CustomerDashboard';
 
 // Admin / Employee Pages
@@ -86,6 +87,7 @@ const AppRoutes: React.FC = () => {
         <Route path="videos" element={<VideoGallery />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="dashboard" element={<ProtectedRoute allowedRoles={['customer', 'admin', 'employee']}><CustomerDashboard /></ProtectedRoute>} />
       </Route>
 

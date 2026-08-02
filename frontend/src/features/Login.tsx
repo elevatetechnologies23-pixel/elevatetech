@@ -84,7 +84,12 @@ const Login: React.FC = () => {
         </div>
 
         <div className="space-y-1">
-          <span className="flex items-center gap-1 text-slate-400"><Lock size={12} /> Password</span>
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1 text-slate-400"><Lock size={12} /> Password</span>
+            <Link to="/forgot-password" className="text-[10px] text-accent-blue hover:underline font-semibold">
+              Forgot Password?
+            </Link>
+          </div>
           <input
             type="password"
             required
