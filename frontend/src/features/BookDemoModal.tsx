@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, Video, CheckCircle, Sparkles, Phone, Mail, Building } from 'lucide-react';
+import { X, Calendar, Video, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../utils/ToastContext';
 

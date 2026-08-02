@@ -20,7 +20,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useToast } from '../utils/ToastContext';
-import { shareLicenseOnWhatsApp, shareInvoiceOnWhatsApp, shareTicketOnWhatsApp } from '../utils/whatsappService';
+import { shareInvoiceOnWhatsApp } from '../utils/whatsappService';
 
 const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();

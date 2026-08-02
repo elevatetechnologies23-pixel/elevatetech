@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Clock, TrendingUp, ShieldCheck, Sparkles, ArrowRight } from 'lucide-react';
+import { Calculator, Clock, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ROICalculator: React.FC = () => {
