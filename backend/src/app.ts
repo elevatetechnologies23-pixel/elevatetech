@@ -64,7 +64,10 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
-// 4. Rate Limiter (Prevent DDOS / Brute Force)
+// 4. Trust proxy — required on Render/Heroku/Railway (reverse proxy adds X-Forwarded-For)
+app.set('trust proxy', 1);
+
+// 5. Rate Limiter (Prevent DDOS / Brute Force)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per window
