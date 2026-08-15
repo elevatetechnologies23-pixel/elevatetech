@@ -84,47 +84,47 @@ const Catalog: React.FC = () => {
     }
   };
   
-  // Filter States
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [sortOption, setSortOption] = useState('newest');
-  
-  // Specific specs filters
-  const [specProcessor, setSpecProcessor] = useState('');
-  const [specRAM, setSpecRAM] = useState('');
-  const [specSSD, setSpecSSD] = useState('');
-  const [specOS, setSpecOS] = useState('');
+  // ── Derive all filter values directly from the URL ──────────────────────
+  const selectedCategory = searchParams.get('category') || '';
+  const selectedBrand    = searchParams.get('brand')    || '';
+  const minPrice         = searchParams.get('minPrice') || '';
+  const maxPrice         = searchParams.get('maxPrice') || '';
+  const sortOption       = searchParams.get('sort')     || 'newest';
+  const specProcessor    = searchParams.get('processor') || '';
+  const specRAM          = searchParams.get('ram')       || '';
+  const specSSD          = searchParams.get('ssd')       || '';
+  const specOS           = searchParams.get('os')        || '';
 
-  // Sync category param from URL
-  useEffect(() => {
-    const cat = searchParams.get('category');
-    if (cat !== null) {
-      setSelectedCategory(cat);
-    }
-  }, [searchParams]);
+  // Helper: update one param key, keep the rest
+  const setParam = (key: string, value: string) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (value) {
+        next.set(key, value);
+      } else {
+        next.delete(key);
+      }
+      return next;
+    });
+  };
 
-  // Fetch products from backend or fallback to local filters
+  // Fetch products from backend whenever URL params change
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const queryParams = new URLSearchParams();
         if (selectedCategory) queryParams.append('category', selectedCategory);
-        if (selectedBrand) queryParams.append('brand', selectedBrand);
-        if (minPrice) queryParams.append('minPrice', minPrice);
-        if (maxPrice) queryParams.append('maxPrice', maxPrice);
-        if (sortOption) queryParams.append('sort', sortOption);
-        
-        // specs
-        if (specProcessor) queryParams.append('processor', specProcessor);
-        if (specRAM) queryParams.append('ram', specRAM);
-        if (specSSD) queryParams.append('ssd', specSSD);
-        if (specOS) queryParams.append('os', specOS);
-
+        if (selectedBrand)    queryParams.append('brand', selectedBrand);
+        if (minPrice)         queryParams.append('minPrice', minPrice);
+        if (maxPrice)         queryParams.append('maxPrice', maxPrice);
+        if (sortOption)       queryParams.append('sort', sortOption);
+        if (specProcessor)    queryParams.append('processor', specProcessor);
+        if (specRAM)          queryParams.append('ram', specRAM);
+        if (specSSD)          queryParams.append('ssd', specSSD);
+        if (specOS)           queryParams.append('os', specOS);
         const search = searchParams.get('q');
-        if (search) queryParams.append('search', search);
+        if (search)           queryParams.append('search', search);
 
         const res = await api.get(`/products?${queryParams.toString()}`);
         if (res.data?.data) {
@@ -132,61 +132,28 @@ const Catalog: React.FC = () => {
         }
       } catch (err: any) {
         console.warn('Backend connection failed, using offline fallback filtering:', err.message);
-        // Fallback local filtering logic
         let filtered = [...MOCK_PRODUCTS];
 
-        // Search text
         const q = searchParams.get('q');
         if (q) {
           const regex = new RegExp(q, 'i');
-          filtered = filtered.filter(p => 
-            p.name.match(regex) || 
-            p.sku.match(regex) || 
+          filtered = filtered.filter(p =>
+            p.name.match(regex) ||
+            p.sku.match(regex) ||
             p.description.match(regex)
           );
         }
-
-        // Category
-        if (selectedCategory) {
-          filtered = filtered.filter(p => p.category === selectedCategory);
-        }
-
-        // Brand
-        if (selectedBrand) {
-          filtered = filtered.filter(p => p.brand === selectedBrand);
-        }
-
-        // Price range
-        if (minPrice) {
-          filtered = filtered.filter(p => p.basePrice >= Number(minPrice));
-        }
-        if (maxPrice) {
-          filtered = filtered.filter(p => p.basePrice <= Number(maxPrice));
-        }
-
-        // Specs
-        if (specProcessor) {
-          filtered = filtered.filter(p => p.specifications.some(s => s.name === 'Processor' && s.value.toLowerCase().includes(specProcessor.toLowerCase())));
-        }
-        if (specRAM) {
-          filtered = filtered.filter(p => p.specifications.some(s => s.name === 'RAM' && s.value.toLowerCase().includes(specRAM.toLowerCase())));
-        }
-        if (specSSD) {
-          filtered = filtered.filter(p => p.specifications.some(s => s.name === 'SSD' && s.value.toLowerCase().includes(specSSD.toLowerCase())));
-        }
-        if (specOS) {
-          filtered = filtered.filter(p => p.specifications.some(s => s.name === 'Operating System' && s.value.toLowerCase().includes(specOS.toLowerCase())));
-        }
-
-        // Sorting
-        if (sortOption === 'price-asc') {
-          filtered.sort((a, b) => a.basePrice - b.basePrice);
-        } else if (sortOption === 'price-desc') {
-          filtered.sort((a, b) => b.basePrice - a.basePrice);
-        } else if (sortOption === 'rating') {
-          filtered.sort((a, b) => b.ratingsAverage - a.ratingsAverage);
-        }
-
+        if (selectedCategory) filtered = filtered.filter(p => p.category === selectedCategory);
+        if (selectedBrand)    filtered = filtered.filter(p => p.brand === selectedBrand);
+        if (minPrice)         filtered = filtered.filter(p => p.basePrice >= Number(minPrice));
+        if (maxPrice)         filtered = filtered.filter(p => p.basePrice <= Number(maxPrice));
+        if (specProcessor)    filtered = filtered.filter(p => p.specifications.some(s => s.name === 'Processor' && s.value.toLowerCase().includes(specProcessor.toLowerCase())));
+        if (specRAM)          filtered = filtered.filter(p => p.specifications.some(s => s.name === 'RAM' && s.value.toLowerCase().includes(specRAM.toLowerCase())));
+        if (specSSD)          filtered = filtered.filter(p => p.specifications.some(s => s.name === 'SSD' && s.value.toLowerCase().includes(specSSD.toLowerCase())));
+        if (specOS)           filtered = filtered.filter(p => p.specifications.some(s => s.name === 'Operating System' && s.value.toLowerCase().includes(specOS.toLowerCase())));
+        if (sortOption === 'price-asc')  filtered.sort((a, b) => a.basePrice - b.basePrice);
+        if (sortOption === 'price-desc') filtered.sort((a, b) => b.basePrice - a.basePrice);
+        if (sortOption === 'rating')     filtered.sort((a, b) => b.ratingsAverage - a.ratingsAverage);
         setProducts(filtered);
       } finally {
         setIsLoading(false);
@@ -194,18 +161,8 @@ const Catalog: React.FC = () => {
     };
 
     fetchProducts();
-  }, [
-    selectedCategory, 
-    selectedBrand, 
-    minPrice, 
-    maxPrice, 
-    sortOption, 
-    specProcessor, 
-    specRAM, 
-    specSSD, 
-    specOS,
-    searchParams
-  ]);
+  }, [searchParams]);
+
 
   const handleAddToCart = (e: React.MouseEvent, prod: ProductItem) => {
     e.stopPropagation();
@@ -223,15 +180,9 @@ const Catalog: React.FC = () => {
   };
 
   const handleClearAllFilters = () => {
-    setSelectedCategory('');
-    setSelectedBrand('');
-    setMinPrice('');
-    setMaxPrice('');
-    setSpecProcessor('');
-    setSpecRAM('');
-    setSpecSSD('');
-    setSpecOS('');
-    setSearchParams({});
+    // Keep search query if present, clear all filter params
+    const q = searchParams.get('q');
+    setSearchParams(q ? { q } : {});
   };
 
   return (
@@ -251,7 +202,7 @@ const Catalog: React.FC = () => {
           <span className="text-xs text-slate-400">Sort by</span>
           <select 
             value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
+            onChange={(e) => setParam('sort', e.target.value)}
             className="px-3 py-2 bg-white dark:bg-primary-700 text-xs rounded-xl outline-none border border-slate-200 dark:border-primary-500 font-semibold"
           >
             <option value="newest">Newest Arrivals</option>
@@ -302,7 +253,7 @@ const Catalog: React.FC = () => {
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Category</label>
               <select 
                 value={selectedCategory} 
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => setParam('category', e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg outline-none border-none font-medium text-slate-700 dark:text-slate-200"
               >
                 <option value="">All Categories</option>
@@ -317,7 +268,7 @@ const Catalog: React.FC = () => {
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Brand</label>
               <select 
                 value={selectedBrand} 
-                onChange={(e) => setSelectedBrand(e.target.value)}
+                onChange={(e) => setParam('brand', e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg outline-none border-none font-medium text-slate-700 dark:text-slate-200"
               >
                 <option value="">All Brands</option>
@@ -335,14 +286,14 @@ const Catalog: React.FC = () => {
                   type="number"
                   placeholder="Min"
                   value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
+                  onChange={(e) => setParam('minPrice', e.target.value)}
                   className="w-full px-2 py-1.5 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg border-none focus:ring-1 focus:ring-accent-blue"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
+                  onChange={(e) => setParam('maxPrice', e.target.value)}
                   className="w-full px-2 py-1.5 bg-slate-50 dark:bg-primary-600 text-xs rounded-lg border-none focus:ring-1 focus:ring-accent-blue"
                 />
               </div>
@@ -357,7 +308,7 @@ const Catalog: React.FC = () => {
                 <span className="text-[10px] text-slate-400">Processor</span>
                 <select 
                   value={specProcessor} 
-                  onChange={(e) => setSpecProcessor(e.target.value)}
+                  onChange={(e) => setParam('processor', e.target.value)}
                   className="w-full px-2 py-1 bg-slate-50 dark:bg-primary-600 text-[10px] rounded outline-none border-none"
                 >
                   <option value="">Any Processor</option>
@@ -372,7 +323,7 @@ const Catalog: React.FC = () => {
                 <span className="text-[10px] text-slate-400">Memory (RAM)</span>
                 <select 
                   value={specRAM} 
-                  onChange={(e) => setSpecRAM(e.target.value)}
+                  onChange={(e) => setParam('ram', e.target.value)}
                   className="w-full px-2 py-1 bg-slate-50 dark:bg-primary-600 text-[10px] rounded outline-none border-none"
                 >
                   <option value="">Any RAM</option>
@@ -387,7 +338,7 @@ const Catalog: React.FC = () => {
                 <span className="text-[10px] text-slate-400">Storage (SSD)</span>
                 <select 
                   value={specSSD} 
-                  onChange={(e) => setSpecSSD(e.target.value)}
+                  onChange={(e) => setParam('ssd', e.target.value)}
                   className="w-full px-2 py-1 bg-slate-50 dark:bg-primary-600 text-[10px] rounded outline-none border-none"
                 >
                   <option value="">Any SSD</option>
@@ -402,7 +353,7 @@ const Catalog: React.FC = () => {
                 <span className="text-[10px] text-slate-400">Operating System</span>
                 <select 
                   value={specOS} 
-                  onChange={(e) => setSpecOS(e.target.value)}
+                  onChange={(e) => setParam('os', e.target.value)}
                   className="w-full px-2 py-1 bg-slate-50 dark:bg-primary-600 text-[10px] rounded outline-none border-none"
                 >
                   <option value="">Any OS</option>
