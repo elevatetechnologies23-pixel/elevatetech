@@ -35,27 +35,43 @@ const app: Application = express();
 app.use(helmet());
 
 // 2. CORS setup
+const ALWAYS_ALLOWED_ORIGINS = [
+  'https://elevatetechnologies.in',
+  'https://www.elevatetechnologies.in',
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = process.env.ALLOWED_ORIGINS
+      // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+      if (!origin) return callback(null, true);
+
+      const allowedFromEnv = process.env.ALLOWED_ORIGINS
         ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
         : [];
-      if (
-        !origin ||
+
+      const isAllowed =
         origin.startsWith('http://localhost') ||
         origin.includes('vercel.app') ||
-        allowedOrigins.includes(origin)
-      ) {
+        ALWAYS_ALLOWED_ORIGINS.includes(origin) ||
+        allowedFromEnv.includes(origin);
+
+      if (isAllowed) {
         callback(null, true);
       } else {
-        callback(null, false);
+        // Use an error so the browser receives a proper CORS rejection
+        // (avoids silent missing-header failures on preflight)
+        callback(new Error(`CORS: origin '${origin}' not allowed`));
       }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
+
+// Ensure OPTIONS preflight requests are always handled
+app.options('*', cors());
 
 // 3. Logger
 if (process.env.NODE_ENV === 'development') {
