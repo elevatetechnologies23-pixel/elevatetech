@@ -3,14 +3,18 @@ import nodemailer from 'nodemailer';
 // Create a transporter using environment variables or Ethereal test account fallback
 const createTransporter = async () => {
   if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+    const port = Number(process.env.SMTP_PORT) || 465;
+    const secure = process.env.SMTP_SECURE === 'true' || port === 465;
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === 'true',
+      port,
+      secure,
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+        // Strip spaces from Gmail App Passwords (e.g. "xxxx xxxx xxxx xxxx")
+        pass: (process.env.SMTP_PASS || '').replace(/\s/g, '')
+      },
+      tls: { rejectUnauthorized: false }
     });
   }
 

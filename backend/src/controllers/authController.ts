@@ -10,11 +10,18 @@ import nodemailer from 'nodemailer';
 const sendPasswordResetEmail = async (toEmail: string, recipientName: string, otp: string) => {
   let transporter;
   if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+    const port = Number(process.env.SMTP_PORT) || 465;
+    const secure = process.env.SMTP_SECURE === 'true' || port === 465;
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+      port,
+      secure,
+      auth: {
+        user: process.env.SMTP_USER,
+        // Remove spaces from Gmail App Password if present
+        pass: (process.env.SMTP_PASS || '').replace(/\s/g, '')
+      },
+      tls: { rejectUnauthorized: false }
     });
   } else {
     const testAccount = await nodemailer.createTestAccount();
@@ -25,7 +32,7 @@ const sendPasswordResetEmail = async (toEmail: string, recipientName: string, ot
   }
 
   const info = await transporter.sendMail({
-    from: `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`,
+    from: process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`,
     to: toEmail,
     subject: '🔐 Password Reset OTP — Elevate Technology',
     html: `
@@ -219,14 +226,13 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    // Send email asynchronously — don't block the response
-    (async () => {
-      try {
-        await sendPasswordResetEmail(user.email, user.name, resetToken);
-      } catch (e) {
-        console.warn('Could not send password reset email:', e);
-      }
-    })();
+    // Send email — await so errors are visible in server logs
+    try {
+      await sendPasswordResetEmail(user.email, user.name, resetToken);
+    } catch (emailErr) {
+      console.error('Failed to send password reset email:', emailErr);
+      // OTP is saved; don't fail the request — user can retry
+    }
 
     res.status(200).json({ status: 'success', message: 'If that email exists, an OTP has been sent.' });
   } catch (error) {
