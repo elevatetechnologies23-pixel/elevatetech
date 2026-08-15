@@ -751,3 +751,29 @@ export const validateCoupon = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+
+// ─── Admin: Delete Order ───────────────────────────────────────────────────
+export const deleteOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return next(new AppError('Order not found', 404));
+    }
+
+    await AuditLog.create({
+      user: req.user?._id,
+      action: 'ORDER_DELETE',
+      details: `Deleted order ${order.orderNumber} (ID: ${order._id}) — Grand Total: ₹${order.grandTotal}`
+    });
+
+    await Order.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      status: 'success',
+      message: `Order ${order.orderNumber} has been permanently deleted.`
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

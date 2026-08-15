@@ -8,7 +8,8 @@ import {
   cancelOrder,
   getAdminOrders,
   downloadInvoice,
-  validateCoupon
+  validateCoupon,
+  deleteOrder
 } from '../controllers/orderController';
 import { protect, restrictTo } from '../middlewares/auth';
 
@@ -26,5 +27,6 @@ router.get('/invoice/:orderNumber/download', protect, downloadInvoice);
 router.get('/admin-queue', protect, restrictTo('admin', 'employee'), getAdminOrders);
 router.put('/:id/status', protect, restrictTo('admin', 'employee'), updateOrderStatus);
 router.put('/:id/payment-status', protect, restrictTo('admin', 'employee'), updatePaymentStatus);
+router.delete('/:id', protect, restrictTo('admin'), deleteOrder);
 
 export default router;

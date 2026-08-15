@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { RefreshCw, CheckCircle, AlertTriangle, CreditCard } from 'lucide-react';
+import { RefreshCw, CheckCircle, AlertTriangle, CreditCard, Trash2 } from 'lucide-react';
 import { useToast } from '../../utils/ToastContext';
 
 const PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded', 'partially_paid'];
@@ -12,6 +12,7 @@ const AdminOrders: React.FC = () => {
   const [updateMsg, setUpdateMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [updatingPayId, setUpdatingPayId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const toast = useToast();
 
   const loadOrders = async () => {
@@ -115,6 +116,29 @@ const AdminOrders: React.FC = () => {
     }
   };
 
+  // ─── Delete Order ─────────────────────────────────────────────────────────
+  const handleDeleteOrder = async (ord: any) => {
+    const mongoId = ord._id || ord.id;
+    if (!mongoId) return;
+
+    const confirmed = window.confirm(
+      `⚠️ Permanently delete order ${ord.orderNumber}?\n\nThis action CANNOT be undone. The order record will be removed from the database.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(mongoId);
+    try {
+      await api.delete(`/orders/${mongoId}`);
+      setOrders(prev => prev.filter(o => (o._id || o.id) !== mongoId));
+      toast.success('Order Deleted', `Order ${ord.orderNumber} has been permanently deleted.`);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Failed to delete order.';
+      toast.error('Delete Failed', msg);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   // ─── Status Badge ─────────────────────────────────────────────────────────
   const getStatusBadge = (status: string) => {
     if (['shipped', 'delivered', 'paid'].includes(status)) {
@@ -175,6 +199,7 @@ const AdminOrders: React.FC = () => {
                 </th>
                 <th className="px-5 py-4 font-bold text-slate-400 text-right">Change Status</th>
                 <th className="px-5 py-4 font-bold text-slate-400 text-right">Change Payment</th>
+                <th className="px-5 py-4 font-bold text-slate-400 text-center">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -261,6 +286,24 @@ const AdminOrders: React.FC = () => {
                           <div className="w-3 h-3 border-2 border-accent-blue border-t-transparent rounded-full animate-spin" />
                         )}
                       </div>
+                    </td>
+
+                    {/* Delete button */}
+                    <td className="px-5 py-4 text-center">
+                      <button
+                        onClick={() => handleDeleteOrder(ord)}
+                        disabled={deletingId === mongoId}
+                        title="Permanently delete this order"
+                        className={`inline-flex items-center justify-center w-7 h-7 rounded-lg border transition-all ${
+                          deletingId === mongoId
+                            ? 'opacity-40 cursor-wait border-slate-200 dark:border-primary-500'
+                            : 'border-red-200 dark:border-red-800/40 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 hover:scale-110'
+                        }`}
+                      >
+                        {deletingId === mongoId
+                          ? <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                          : <Trash2 size={12} />}
+                      </button>
                     </td>
                   </tr>
                 );
