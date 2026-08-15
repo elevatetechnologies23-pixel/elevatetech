@@ -109,7 +109,8 @@ const DashboardLayout: React.FC = () => {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+      const rawUrl = import.meta.env.VITE_API_URL || 'https://elevate-backend-2vpy.onrender.com/api/v1';
+      const API_URL = rawUrl.replace(/\/$/, '').endsWith('/api/v1') ? rawUrl.replace(/\/$/, '') : `${rawUrl.replace(/\/$/, '')}/api/v1`;
       const eventSource = new EventSource(`${API_URL}/notifications/stream?token=${token}`);
 
       eventSource.onmessage = (event) => {

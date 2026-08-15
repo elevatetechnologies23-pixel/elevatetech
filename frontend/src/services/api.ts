@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+// Normalize the API URL:
+// - Strip trailing slash
+// - If the URL doesn't already end with /api/v1, append it
+// This guards against Vercel env vars set to the bare domain (no path).
+const rawApiUrl =
+  import.meta.env.VITE_API_URL ||
+  'https://elevate-backend-2vpy.onrender.com/api/v1';
+
+const API_URL = rawApiUrl.replace(/\/$/, '').endsWith('/api/v1')
+  ? rawApiUrl.replace(/\/$/, '')
+  : `${rawApiUrl.replace(/\/$/, '')}/api/v1`;
 
 const api = axios.create({
   baseURL: API_URL,

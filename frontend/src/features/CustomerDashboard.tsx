@@ -119,7 +119,8 @@ const CustomerDashboard: React.FC = () => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    const rawUrl = import.meta.env.VITE_API_URL || 'https://elevate-backend-2vpy.onrender.com/api/v1';
+    const API_URL = rawUrl.replace(/\/$/, '').endsWith('/api/v1') ? rawUrl.replace(/\/$/, '') : `${rawUrl.replace(/\/$/, '')}/api/v1`;
     const eventSource = new EventSource(`${API_URL}/notifications/stream?token=${token}`);
 
     eventSource.onmessage = (event) => {
@@ -295,7 +296,8 @@ const CustomerDashboard: React.FC = () => {
 
   const downloadMockInvoice = (orderNo: string) => {
     const token = localStorage.getItem('accessToken') || '';
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    const rawApiUrl2 = import.meta.env.VITE_API_URL || 'https://elevate-backend-2vpy.onrender.com/api/v1';
+    const apiUrl = rawApiUrl2.replace(/\/$/, '').endsWith('/api/v1') ? rawApiUrl2.replace(/\/$/, '') : `${rawApiUrl2.replace(/\/$/, '')}/api/v1`;
     window.open(`${apiUrl}/orders/invoice/${orderNo}/download?token=${encodeURIComponent(token)}&_cb=${Date.now()}`, '_blank');
   };
 
