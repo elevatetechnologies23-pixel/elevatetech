@@ -128,15 +128,16 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { emailOrPhone, password } = req.body;
+    const { emailOrPhone, email, phone, username, password } = req.body;
+    const rawIdentifier = (emailOrPhone || email || phone || username || '').toString().trim();
 
-    if (!emailOrPhone || !password) {
+    if (!rawIdentifier || !password) {
       return next(new AppError('Please provide email/phone and password', 400));
     }
 
     // Detect if input is a phone number (10 digits) or email
-    const isPhone = /^[6-9]\d{9}$/.test(emailOrPhone.trim());
-    const query = isPhone ? { phone: emailOrPhone.trim() } : { email: emailOrPhone.trim().toLowerCase() };
+    const isPhone = /^[6-9]\d{9}$/.test(rawIdentifier);
+    const query = isPhone ? { phone: rawIdentifier } : { email: rawIdentifier.toLowerCase() };
 
     const user = await User.findOne(query).select('+password');
     if (!user || !(await user.comparePassword(password))) {

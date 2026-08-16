@@ -23,7 +23,11 @@ const EmployeeLogin: React.FC = () => {
     dispatch(authStart());
 
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/login', { 
+        emailOrPhone: email.trim(), 
+        email: email.trim(), 
+        password 
+      });
       if (res.data?.data) {
         const { user, accessToken, refreshToken } = res.data.data;
 
@@ -39,7 +43,7 @@ const EmployeeLogin: React.FC = () => {
         navigate('/employee');
       }
     } catch (err: any) {
-      const errMsg = err.message || err.response?.data?.message || 'Invalid staff credentials.';
+      const errMsg = err.response?.data?.message || err.message || 'Invalid staff credentials.';
       setLoginError(errMsg);
       dispatch(authFailure(errMsg));
     }

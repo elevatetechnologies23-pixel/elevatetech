@@ -28,7 +28,11 @@ const Login: React.FC = () => {
     dispatch(authStart());
 
     try {
-      const res = await api.post('/auth/login', { emailOrPhone, password });
+      const res = await api.post('/auth/login', { 
+        emailOrPhone: emailOrPhone.trim(), 
+        email: emailOrPhone.trim(), 
+        password 
+      });
       if (res.data?.data) {
         const { user, accessToken, refreshToken } = res.data.data;
         dispatch(authSuccess({ user, token: accessToken, refreshToken }));
