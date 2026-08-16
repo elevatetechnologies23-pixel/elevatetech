@@ -173,12 +173,15 @@ export const refresh = async (req: Request, res: Response, next: NextFunction): 
 
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email } = req.body;
-    if (!email) return next(new AppError('Email address is required', 400));
+    const rawEmail = req.body.email || req.body.emailOrPhone;
+    if (!rawEmail) return next(new AppError('Email address is required', 400));
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = rawEmail.toString().trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+
     // Always respond 200 to prevent email enumeration
     if (!user) {
+      console.warn(`Forgot password requested for non-existent email: ${normalizedEmail}`);
       res.status(200).json({ status: 'success', message: 'If that email exists, an OTP has been sent.' });
       return;
     }
@@ -188,10 +191,13 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    // Send email in parallel with pooled transporter so UI response is instantaneous
-    sendPasswordResetEmail(user.email, user.name, resetToken).catch((emailErr) => {
-      console.error('Failed to send password reset email:', emailErr);
-    });
+    console.log(`Dispatched reset OTP for ${user.email}`);
+    try {
+      await sendPasswordResetEmail(user.email, user.name, resetToken);
+      console.log(`Successfully sent OTP to ${user.email}`);
+    } catch (emailErr: any) {
+      console.error('Failed to send password reset email:', emailErr.message || emailErr);
+    }
 
     res.status(200).json({ status: 'success', message: 'If that email exists, an OTP has been sent.' });
   } catch (error) {
@@ -202,9 +208,12 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { email, otp, newPassword } = req.body;
+    const normalizedEmail = (email || '').toString().trim().toLowerCase();
+    const cleanOtp = (otp || '').toString().trim();
+
     const user = await User.findOne({ 
-      email, 
-      resetPasswordToken: otp,
+      email: normalizedEmail, 
+      resetPasswordToken: cleanOtp,
       resetPasswordExpire: { $gt: new Date() }
     });
 
