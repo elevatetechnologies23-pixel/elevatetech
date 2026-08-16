@@ -1,7 +1,14 @@
 import nodemailer from 'nodemailer';
 
-// Create a transporter using environment variables or Ethereal test account fallback
-export const createTransporter = async () => {
+// Singleton cached pooled transporter for high-speed delivery
+let cachedTransporter: nodemailer.Transporter | null = null;
+
+// Create or return reusable pooled transporter using environment variables
+export const createTransporter = async (): Promise<nodemailer.Transporter> => {
+  if (cachedTransporter) {
+    return cachedTransporter;
+  }
+
   const host = process.env.SMTP_HOST;
   const user = (process.env.SMTP_USER || '').trim().replace(/["']/g, '');
   const pass = (process.env.SMTP_PASS || '').trim().replace(/\s/g, '').replace(/["']/g, '');
@@ -10,25 +17,33 @@ export const createTransporter = async () => {
 
   if (user && pass) {
     if (isGmail) {
-      return nodemailer.createTransport({
+      cachedTransporter = nodemailer.createTransport({
         service: 'gmail',
+        pool: true,
+        maxConnections: 5,
+        maxMessages: 100,
         auth: { user, pass }
       });
+      return cachedTransporter;
     }
 
-    return nodemailer.createTransport({
+    cachedTransporter = nodemailer.createTransport({
       host: host || 'smtp.gmail.com',
       port,
       secure: process.env.SMTP_SECURE === 'true' || port === 465,
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
       auth: { user, pass },
       tls: { rejectUnauthorized: false }
     });
+    return cachedTransporter;
   }
 
   // Fallback to test account (Ethereal) for dev/testing
   console.warn('⚠️ SMTP credentials not fully provided. Using temporary Ethereal test account.');
   const testAccount = await nodemailer.createTestAccount();
-  return nodemailer.createTransport({
+  cachedTransporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
     secure: false,
@@ -37,6 +52,7 @@ export const createTransporter = async () => {
       pass: testAccount.pass
     }
   });
+  return cachedTransporter;
 };
 
 // Verify SMTP connection and optionally send a test email

@@ -188,13 +188,10 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    // Send email — await so errors are visible in server logs
-    try {
-      await sendPasswordResetEmail(user.email, user.name, resetToken);
-    } catch (emailErr) {
+    // Send email in parallel with pooled transporter so UI response is instantaneous
+    sendPasswordResetEmail(user.email, user.name, resetToken).catch((emailErr) => {
       console.error('Failed to send password reset email:', emailErr);
-      // OTP is saved; don't fail the request — user can retry
-    }
+    });
 
     res.status(200).json({ status: 'success', message: 'If that email exists, an OTP has been sent.' });
   } catch (error) {
