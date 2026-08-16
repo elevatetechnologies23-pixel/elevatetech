@@ -1,7 +1,67 @@
 import nodemailer from 'nodemailer';
 
-// Helper to send mail with automatic cloud port failover (Port 587 STARTTLS / Port 465 SSL)
+// Helper to send mail via HTTPS API (Resend or Brevo) or SMTP with cloud failover
 export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptions): Promise<nodemailer.SentMessageInfo> => {
+  const to = Array.isArray(mailOptions.to) ? mailOptions.to[0] : (mailOptions.to as string);
+  const subject = mailOptions.subject || '';
+  const html = (mailOptions.html || '') as string;
+  const text = (mailOptions.text || '') as string;
+
+  // 1. If RESEND_API_KEY is configured, dispatch via HTTPS API (never blocked by Render free tier)
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const fromAddress = process.env.SMTP_FROM || 'Elevate Technology <onboarding@resend.dev>';
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: fromAddress,
+          to: [to],
+          subject,
+          html,
+          text
+        })
+      });
+      if (res.ok) {
+        const data: any = await res.json();
+        console.log(`Email dispatched via Resend HTTPS API to ${to}:`, data.id);
+        return { messageId: data.id, response: '250 OK via Resend API' } as any;
+      }
+    } catch (apiErr: any) {
+      console.warn('Resend API dispatch failed, falling back to SMTP:', apiErr.message || apiErr);
+    }
+  }
+
+  // 2. If BREVO_API_KEY is configured, dispatch via Brevo HTTPS API
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: 'Elevate Technology', email: process.env.SMTP_USER || 'elevatetechnologies23@gmail.com' },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+          textContent: text
+        })
+      });
+      if (res.ok) {
+        const data: any = await res.json();
+        console.log(`Email dispatched via Brevo HTTPS API to ${to}:`, data.messageId);
+        return { messageId: data.messageId, response: '250 OK via Brevo API' } as any;
+      }
+    } catch (apiErr: any) {
+      console.warn('Brevo API dispatch failed, falling back to SMTP:', apiErr.message || apiErr);
+    }
+  }
+
   const user = (process.env.SMTP_USER || '').trim().replace(/["']/g, '');
   const pass = (process.env.SMTP_PASS || '').trim().replace(/\s/g, '').replace(/["']/g, '');
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -11,7 +71,7 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
     return fallbackTransporter.sendMail(mailOptions);
   }
 
-  // 1. Try standard cloud submission port 587 with STARTTLS first (allowed on Render/cloud networks)
+  // 3. Try standard cloud submission port 587 with STARTTLS (allowed on Render/cloud networks)
   try {
     const t587 = nodemailer.createTransport({
       host,
@@ -27,7 +87,7 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
   } catch (err587: any) {
     console.warn('Port 587 dispatch failed, attempting Port 465 fallback...', err587.message || err587);
     
-    // 2. Fallback to port 465 SSL
+    // 4. Fallback to port 465 SSL
     const t465 = nodemailer.createTransport({
       host,
       port: 465,
