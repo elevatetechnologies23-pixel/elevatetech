@@ -1,12 +1,55 @@
 import nodemailer from 'nodemailer';
 
-// Create or return transporter using environment variables
+// Helper to send mail with automatic cloud port failover (Port 587 STARTTLS / Port 465 SSL)
+export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptions): Promise<nodemailer.SentMessageInfo> => {
+  const user = (process.env.SMTP_USER || '').trim().replace(/["']/g, '');
+  const pass = (process.env.SMTP_PASS || '').trim().replace(/\s/g, '').replace(/["']/g, '');
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+
+  if (!user || !pass) {
+    const fallbackTransporter = await createTransporter();
+    return fallbackTransporter.sendMail(mailOptions);
+  }
+
+  // 1. Try standard cloud submission port 587 with STARTTLS first (allowed on Render/cloud networks)
+  try {
+    const t587 = nodemailer.createTransport({
+      host,
+      port: 587,
+      secure: false,
+      auth: { user, pass },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 12000
+    });
+    return await t587.sendMail(mailOptions);
+  } catch (err587: any) {
+    console.warn('Port 587 dispatch failed, attempting Port 465 fallback...', err587.message || err587);
+    
+    // 2. Fallback to port 465 SSL
+    const t465 = nodemailer.createTransport({
+      host,
+      port: 465,
+      secure: true,
+      auth: { user, pass },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 12000
+    });
+    return await t465.sendMail(mailOptions);
+  }
+};
+
+// Create or return transporter using environment variables (defaulting to cloud-friendly port 587)
 export const createTransporter = async (): Promise<nodemailer.Transporter> => {
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
   const user = (process.env.SMTP_USER || '').trim().replace(/["']/g, '');
   const pass = (process.env.SMTP_PASS || '').trim().replace(/\s/g, '').replace(/["']/g, '');
-  const port = Number(process.env.SMTP_PORT) || 465;
-  const secure = process.env.SMTP_SECURE === 'true' || port === 465;
+  const envPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
+  const port = envPort === 465 ? 465 : 587;
+  const secure = port === 465;
 
   if (user && pass) {
     return nodemailer.createTransport({
@@ -15,9 +58,9 @@ export const createTransporter = async (): Promise<nodemailer.Transporter> => {
       secure,
       auth: { user, pass },
       tls: { rejectUnauthorized: false },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 12000
     });
   }
 
@@ -38,16 +81,14 @@ export const createTransporter = async (): Promise<nodemailer.Transporter> => {
 // Verify SMTP connection and optionally send a test email
 export const testSmtpConnection = async (toEmail?: string): Promise<{ success: boolean; message: string; details?: any }> => {
   try {
-    const transporter = await createTransporter();
-    await transporter.verify();
+    const from = process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`;
     
     if (toEmail) {
-      const from = process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`;
-      const info = await transporter.sendMail({
+      const info = await sendMailWithFallback({
         from,
         to: toEmail,
         subject: '🧪 Elevate Technology SMTP Test Email',
-        text: 'This is a test email confirming that Elevate Technology email dispatch is functioning properly.',
+        text: 'This is a test email confirming that Elevate Technology email dispatch is functioning properly over cloud-optimized port 587.',
         html: `
           <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;border:1px solid #e2e8f0;border-radius:10px;">
             <h3 style="color:#0052FF;">SMTP Test Successful</h3>
@@ -59,6 +100,8 @@ export const testSmtpConnection = async (toEmail?: string): Promise<{ success: b
       return { success: true, message: `SMTP verified and test email sent to ${toEmail}!`, details: { messageId: info.messageId } };
     }
 
+    const transporter = await createTransporter();
+    await transporter.verify();
     return { success: true, message: 'SMTP connection verified successfully!' };
   } catch (err: any) {
     return { success: false, message: err.message || 'SMTP Connection Failed', details: err };
@@ -68,10 +111,9 @@ export const testSmtpConnection = async (toEmail?: string): Promise<{ success: b
 // Send OTP email for password reset
 export const sendPasswordResetEmail = async (toEmail: string, recipientName: string, otp: string) => {
   try {
-    const transporter = await createTransporter();
     const from = process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'elevatetechnologies23@gmail.com'}>`;
 
-    const info = await transporter.sendMail({
+    const info = await sendMailWithFallback({
       from,
       to: toEmail,
       subject: `🔐 Your OTP Code is ${otp} — Elevate Technology`,
@@ -114,7 +156,6 @@ export const sendLicenseKeyEmail = async (
   validUntil: Date | string
 ) => {
   try {
-    const transporter = await createTransporter();
     const formattedDate = new Date(validUntil).toLocaleDateString('en-IN', {
       day: 'numeric', month: 'long', year: 'numeric'
     });
@@ -162,7 +203,7 @@ export const sendLicenseKeyEmail = async (
       `
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    const info = await sendMailWithFallback(mailOptions);
     console.log(`License Email dispatched to ${toEmail}: ${info.messageId}`);
     return true;
   } catch (error) {
@@ -180,8 +221,6 @@ export const sendOrderStatusEmail = async (
   totalAmount: number
 ) => {
   try {
-    const transporter = await createTransporter();
-
     const mailOptions = {
       from: `"Elevate Technology Orders" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`,
       to: toEmail,
@@ -224,7 +263,7 @@ export const sendOrderStatusEmail = async (
       `
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    const info = await sendMailWithFallback(mailOptions);
     console.log(`Order Email dispatched to ${toEmail}: ${info.messageId}`);
     return true;
   } catch (error) {
@@ -241,8 +280,6 @@ export const sendTicketReplyEmail = async (
   replyMessage: string
 ) => {
   try {
-    const transporter = await createTransporter();
-
     const mailOptions = {
       from: `"Elevate Support Helpdesk" <${process.env.SMTP_USER || 'support@elevatetechnology.com'}>`,
       to: toEmail,
@@ -274,7 +311,7 @@ export const sendTicketReplyEmail = async (
       `
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    const info = await sendMailWithFallback(mailOptions);
     console.log(`Ticket Email dispatched to ${toEmail}: ${info.messageId}`);
     return true;
   } catch (error) {
