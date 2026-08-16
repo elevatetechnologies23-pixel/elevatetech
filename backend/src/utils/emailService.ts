@@ -7,7 +7,39 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
   const html = (mailOptions.html || '') as string;
   const text = (mailOptions.text || '') as string;
 
-  // 1. If RESEND_API_KEY is configured, dispatch via HTTPS API (never blocked by Render free tier)
+  // 1. If BREVO_API_KEY is configured, dispatch via Brevo HTTPS API (allowed to any recipient worldwide without DNS verification)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const senderEmail = (process.env.BREVO_SENDER || process.env.SMTP_USER || 'elevatetechnologies23@gmail.com').trim();
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': process.env.BREVO_API_KEY.trim(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: 'Elevate Technology', email: senderEmail },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+          textContent: text
+        })
+      });
+
+      if (res.ok) {
+        const data: any = await res.json();
+        console.log(`Email dispatched via Brevo HTTPS API to ${to}:`, data.messageId);
+        return { messageId: data.messageId, response: '250 OK via Brevo API' } as any;
+      } else {
+        const errJson = await res.json();
+        console.warn('Brevo API returned error, proceeding to next method:', errJson);
+      }
+    } catch (apiErr: any) {
+      console.warn('Brevo API dispatch failed, falling back:', apiErr.message || apiErr);
+    }
+  }
+
+  // 2. If RESEND_API_KEY is configured, dispatch via Resend HTTPS API
   if (process.env.RESEND_API_KEY) {
     try {
       let fromAddress = process.env.RESEND_FROM || process.env.SMTP_FROM || 'Elevate Technology <onboarding@resend.dev>';
@@ -19,7 +51,7 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY.trim()}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -41,33 +73,6 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
       }
     } catch (apiErr: any) {
       console.warn('Resend API dispatch failed, falling back to SMTP:', apiErr.message || apiErr);
-    }
-  }
-
-  // 2. If BREVO_API_KEY is configured, dispatch via Brevo HTTPS API
-  if (process.env.BREVO_API_KEY) {
-    try {
-      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: {
-          'api-key': process.env.BREVO_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          sender: { name: 'Elevate Technology', email: process.env.SMTP_USER || 'elevatetechnologies23@gmail.com' },
-          to: [{ email: to }],
-          subject,
-          htmlContent: html,
-          textContent: text
-        })
-      });
-      if (res.ok) {
-        const data: any = await res.json();
-        console.log(`Email dispatched via Brevo HTTPS API to ${to}:`, data.messageId);
-        return { messageId: data.messageId, response: '250 OK via Brevo API' } as any;
-      }
-    } catch (apiErr: any) {
-      console.warn('Brevo API dispatch failed, falling back to SMTP:', apiErr.message || apiErr);
     }
   }
 
