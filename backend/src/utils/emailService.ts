@@ -10,7 +10,12 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
   // 1. If RESEND_API_KEY is configured, dispatch via HTTPS API (never blocked by Render free tier)
   if (process.env.RESEND_API_KEY) {
     try {
-      const fromAddress = process.env.SMTP_FROM || 'Elevate Technology <onboarding@resend.dev>';
+      let fromAddress = process.env.RESEND_FROM || process.env.SMTP_FROM || 'Elevate Technology <onboarding@resend.dev>';
+      // Resend rejects public domains like @gmail.com in the "from" address
+      if (fromAddress.includes('@gmail.com') || fromAddress.includes('@yahoo.com') || fromAddress.includes('@hotmail.com')) {
+        fromAddress = 'Elevate Technology <onboarding@resend.dev>';
+      }
+
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -25,10 +30,14 @@ export const sendMailWithFallback = async (mailOptions: nodemailer.SendMailOptio
           text
         })
       });
+
       if (res.ok) {
         const data: any = await res.json();
         console.log(`Email dispatched via Resend HTTPS API to ${to}:`, data.id);
         return { messageId: data.id, response: '250 OK via Resend API' } as any;
+      } else {
+        const errJson = await res.json();
+        console.warn('Resend API returned error, proceeding to fallback:', errJson);
       }
     } catch (apiErr: any) {
       console.warn('Resend API dispatch failed, falling back to SMTP:', apiErr.message || apiErr);
