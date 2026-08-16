@@ -4,59 +4,20 @@ import AuditLog from '../models/AuditLog';
 import { generateAccessToken, generateRefreshToken } from '../utils/token';
 import { AppError } from '../app';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import { sendPasswordResetEmail, testSmtpConnection } from '../utils/emailService';
 
-// Helper: send OTP email for password reset
-const sendPasswordResetEmail = async (toEmail: string, recipientName: string, otp: string) => {
-  let transporter;
-  if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-    const port = Number(process.env.SMTP_PORT) || 465;
-    const secure = process.env.SMTP_SECURE === 'true' || port === 465;
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port,
-      secure,
-      auth: {
-        user: process.env.SMTP_USER,
-        // Remove spaces from Gmail App Password if present
-        pass: (process.env.SMTP_PASS || '').replace(/\s/g, '')
-      },
-      tls: { rejectUnauthorized: false }
+// Controller to test SMTP configuration and diagnose credentials
+export const testSmtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const toEmail = req.query.email as string | undefined || req.body?.email;
+    const result = await testSmtpConnection(toEmail);
+    res.status(result.success ? 200 : 400).json({
+      status: result.success ? 'success' : 'fail',
+      data: result
     });
-  } else {
-    const testAccount = await nodemailer.createTestAccount();
-    transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email', port: 587, secure: false,
-      auth: { user: testAccount.user, pass: testAccount.pass }
-    });
+  } catch (error) {
+    next(error);
   }
-
-  const info = await transporter.sendMail({
-    from: process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`,
-    to: toEmail,
-    subject: '🔐 Password Reset OTP — Elevate Technology',
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;padding:24px;background:#fff">
-        <div style="text-align:center;border-bottom:2px solid #0052FF;padding-bottom:14px;margin-bottom:20px">
-          <h2 style="color:#0052FF;margin:0">Elevate Technology</h2>
-          <p style="color:#64748b;font-size:13px;margin-top:4px">Password Reset Request</p>
-        </div>
-        <p style="font-size:15px;color:#1e293b">Hello <strong>${recipientName || 'Valued User'}</strong>,</p>
-        <p style="font-size:13px;color:#475569;line-height:1.6">
-          We received a request to reset your account password. Use the OTP below to continue. It expires in <strong>10 minutes</strong>.
-        </p>
-        <div style="background:#f8fafc;border:2px dashed #0052FF;border-radius:10px;padding:20px;text-align:center;margin:24px 0">
-          <span style="font-size:11px;text-transform:uppercase;color:#64748b;font-weight:bold;letter-spacing:1px;display:block;margin-bottom:8px">Your One-Time Password (OTP)</span>
-          <strong style="font-size:36px;color:#0052FF;font-family:monospace;letter-spacing:8px">${otp}</strong>
-        </div>
-        <p style="font-size:12px;color:#94a3b8">If you did not request this, please ignore this email. Your account remains secure.</p>
-        <div style="border-top:1px solid #e2e8f0;margin-top:20px;padding-top:14px;text-align:center;font-size:11px;color:#94a3b8">
-          Elevate Technology | +91 9922567375 | elevatetechnologies23@gmail.com
-        </div>
-      </div>
-    `
-  });
-  console.log(`Password reset OTP email sent to ${toEmail}: ${info.messageId}`);
 };
 
 // First user to register becomes admin for easy bootstrapping

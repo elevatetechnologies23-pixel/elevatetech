@@ -1,24 +1,32 @@
 import nodemailer from 'nodemailer';
 
 // Create a transporter using environment variables or Ethereal test account fallback
-const createTransporter = async () => {
-  if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-    const port = Number(process.env.SMTP_PORT) || 465;
-    const secure = process.env.SMTP_SECURE === 'true' || port === 465;
+export const createTransporter = async () => {
+  const host = process.env.SMTP_HOST;
+  const user = (process.env.SMTP_USER || '').trim().replace(/["']/g, '');
+  const pass = (process.env.SMTP_PASS || '').trim().replace(/\s/g, '').replace(/["']/g, '');
+  const port = Number(process.env.SMTP_PORT) || 465;
+  const isGmail = (host && host.includes('gmail')) || user.endsWith('@gmail.com');
+
+  if (user && pass) {
+    if (isGmail) {
+      return nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user, pass }
+      });
+    }
+
     return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host: host || 'smtp.gmail.com',
       port,
-      secure,
-      auth: {
-        user: process.env.SMTP_USER,
-        // Strip spaces from Gmail App Passwords (e.g. "xxxx xxxx xxxx xxxx")
-        pass: (process.env.SMTP_PASS || '').replace(/\s/g, '')
-      },
+      secure: process.env.SMTP_SECURE === 'true' || port === 465,
+      auth: { user, pass },
       tls: { rejectUnauthorized: false }
     });
   }
 
   // Fallback to test account (Ethereal) for dev/testing
+  console.warn('⚠️ SMTP credentials not fully provided. Using temporary Ethereal test account.');
   const testAccount = await nodemailer.createTestAccount();
   return nodemailer.createTransport({
     host: 'smtp.ethereal.email',
@@ -29,6 +37,69 @@ const createTransporter = async () => {
       pass: testAccount.pass
     }
   });
+};
+
+// Verify SMTP connection and optionally send a test email
+export const testSmtpConnection = async (toEmail?: string): Promise<{ success: boolean; message: string; details?: any }> => {
+  try {
+    const transporter = await createTransporter();
+    await transporter.verify();
+    
+    if (toEmail) {
+      const from = process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`;
+      const info = await transporter.sendMail({
+        from,
+        to: toEmail,
+        subject: '🧪 Elevate Technology SMTP Test Email',
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;border:1px solid #e2e8f0;border-radius:10px;">
+            <h3 style="color:#0052FF;">SMTP Test Successful</h3>
+            <p>This is a test email confirming that Elevate Technology email dispatch is functioning properly.</p>
+            <p style="font-size:12px;color:#64748b;">Timestamp: ${new Date().toISOString()}</p>
+          </div>
+        `
+      });
+      return { success: true, message: `SMTP verified and test email sent to ${toEmail}!`, details: { messageId: info.messageId } };
+    }
+
+    return { success: true, message: 'SMTP connection verified successfully!' };
+  } catch (err: any) {
+    return { success: false, message: err.message || 'SMTP Connection Failed', details: err };
+  }
+};
+
+// Send OTP email for password reset
+export const sendPasswordResetEmail = async (toEmail: string, recipientName: string, otp: string) => {
+  const transporter = await createTransporter();
+  const from = process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'no-reply@elevatetechnology.com'}>`;
+
+  const info = await transporter.sendMail({
+    from,
+    to: toEmail,
+    subject: '🔐 Password Reset OTP — Elevate Technology',
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;padding:24px;background:#fff">
+        <div style="text-align:center;border-bottom:2px solid #0052FF;padding-bottom:14px;margin-bottom:20px">
+          <h2 style="color:#0052FF;margin:0">Elevate Technology</h2>
+          <p style="color:#64748b;font-size:13px;margin-top:4px">Password Reset Request</p>
+        </div>
+        <p style="font-size:15px;color:#1e293b">Hello <strong>${recipientName || 'Valued User'}</strong>,</p>
+        <p style="font-size:13px;color:#475569;line-height:1.6">
+          We received a request to reset your account password. Use the OTP below to continue. It expires in <strong>10 minutes</strong>.
+        </p>
+        <div style="background:#f8fafc;border:2px dashed #0052FF;border-radius:10px;padding:20px;text-align:center;margin:24px 0">
+          <span style="font-size:11px;text-transform:uppercase;color:#64748b;font-weight:bold;letter-spacing:1px;display:block;margin-bottom:8px">Your One-Time Password (OTP)</span>
+          <strong style="font-size:36px;color:#0052FF;font-family:monospace;letter-spacing:8px">${otp}</strong>
+        </div>
+        <p style="font-size:12px;color:#94a3b8">If you did not request this, please ignore this email. Your account remains secure.</p>
+        <div style="border-top:1px solid #e2e8f0;margin-top:20px;padding-top:14px;text-align:center;font-size:11px;color:#94a3b8">
+          Elevate Technology | +91 9922567375 | elevatetechnologies23@gmail.com
+        </div>
+      </div>
+    `
+  });
+  console.log(`Password reset OTP email sent to ${toEmail}: ${info.messageId}`);
+  return info;
 };
 
 // 1. Send License Key Issuance Email
