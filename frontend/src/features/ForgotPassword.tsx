@@ -75,7 +75,7 @@ const ForgotPassword: React.FC = () => {
       setStep('otp');
       setResendCooldown(60); // 60s cooldown
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Unable to find an account with those details. Please try again.';
+      const msg = err.response?.data?.message || err.message || 'Unable to find an account with those details. Please try again.';
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -165,7 +165,7 @@ const ForgotPassword: React.FC = () => {
       toast.success('Password Reset Successful!', 'You can now sign in with your new password.');
       setStep('done');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Invalid or expired OTP. Please request a new code.';
+      const msg = err.response?.data?.message || err.message || 'Invalid or expired OTP. Please request a new code.';
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -188,7 +188,7 @@ const ForgotPassword: React.FC = () => {
       setResendCooldown(60);
       otpInputsRef.current[0]?.focus();
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Could not resend OTP. Please try again.';
+      const msg = err.response?.data?.message || err.message || 'Could not resend OTP. Please try again.';
       toast.error('Resend Failed', msg);
     } finally {
       setIsLoading(false);
