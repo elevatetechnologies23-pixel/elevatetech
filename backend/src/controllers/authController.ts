@@ -203,6 +203,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
       console.log(`[AUTH] Successfully sent OTP email to ${user.email}`);
     } catch (emailErr: any) {
       console.error('[AUTH] Failed to send password reset email:', emailErr.message || emailErr);
+      return next(new AppError(emailErr.message || 'Failed to dispatch OTP email. Please try again later or contact support.', 500));
     }
 
     // Mask the email for safe client UI display (e.g. a***e@gmail.com)
