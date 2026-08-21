@@ -173,33 +173,53 @@ export const refresh = async (req: Request, res: Response, next: NextFunction): 
 
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const rawEmail = req.body.email || req.body.emailOrPhone;
-    if (!rawEmail) return next(new AppError('Email address is required', 400));
+    const rawIdentifier = (req.body.email || req.body.emailOrPhone || '').toString().trim();
+    if (!rawIdentifier) return next(new AppError('Email address or mobile number is required', 400));
 
-    const normalizedEmail = rawEmail.toString().trim().toLowerCase();
-    const user = await User.findOne({ email: normalizedEmail });
+    const normalizedEmail = rawIdentifier.toLowerCase();
+    
+    // Support lookup by either email or registered phone number
+    const user = await User.findOne({
+      $or: [
+        { email: normalizedEmail },
+        { phone: rawIdentifier }
+      ]
+    });
 
-    // Always respond 200 to prevent email enumeration
     if (!user) {
-      console.warn(`Forgot password requested for non-existent email: ${normalizedEmail}`);
-      res.status(200).json({ status: 'success', message: 'If that email exists, an OTP has been sent.' });
-      return;
+      console.warn(`Forgot password requested for non-existent account: ${rawIdentifier}`);
+      return next(new AppError('No account found with this email or mobile number', 404));
     }
 
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
+    user.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000); // 15-minute expiration
     await user.save();
 
-    console.log(`Dispatched reset OTP for ${user.email}`);
+    console.log(`[AUTH] Generated reset OTP for ${user.email} (Name: ${user.name}): ${resetToken}`);
+    
     try {
       await sendPasswordResetEmail(user.email, user.name, resetToken);
-      console.log(`Successfully sent OTP to ${user.email}`);
+      console.log(`[AUTH] Successfully sent OTP email to ${user.email}`);
     } catch (emailErr: any) {
-      console.error('Failed to send password reset email:', emailErr.message || emailErr);
+      console.error('[AUTH] Failed to send password reset email:', emailErr.message || emailErr);
     }
 
-    res.status(200).json({ status: 'success', message: 'If that email exists, an OTP has been sent.' });
+    // Mask the email for safe client UI display (e.g. a***e@gmail.com)
+    const [namePart, domainPart] = user.email.split('@');
+    const maskedName = namePart.length > 2 
+      ? `${namePart[0]}${'*'.repeat(Math.min(namePart.length - 2, 4))}${namePart[namePart.length - 1]}`
+      : `${namePart[0]}*`;
+    const maskedEmail = `${maskedName}@${domainPart}`;
+
+    res.status(200).json({
+      status: 'success',
+      message: `OTP sent successfully to ${maskedEmail}`,
+      data: {
+        email: user.email,
+        maskedEmail
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -207,18 +227,29 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
 export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, otp, newPassword } = req.body;
-    const normalizedEmail = (email || '').toString().trim().toLowerCase();
+    const { email, emailOrPhone, otp, newPassword } = req.body;
+    const rawIdentifier = (email || emailOrPhone || '').toString().trim();
     const cleanOtp = (otp || '').toString().trim();
 
-    const user = await User.findOne({ 
-      email: normalizedEmail, 
+    if (!rawIdentifier) return next(new AppError('Email or mobile number is required', 400));
+    if (!cleanOtp) return next(new AppError('6-digit OTP code is required', 400));
+    if (!newPassword || newPassword.length < 6) {
+      return next(new AppError('Password must be at least 6 characters long', 400));
+    }
+
+    const normalizedEmail = rawIdentifier.toLowerCase();
+
+    const user = await User.findOne({
+      $or: [
+        { email: normalizedEmail },
+        { phone: rawIdentifier }
+      ],
       resetPasswordToken: cleanOtp,
       resetPasswordExpire: { $gt: new Date() }
     });
 
     if (!user) {
-      return next(new AppError('Token is invalid or has expired', 400));
+      return next(new AppError('Invalid or expired OTP. Please request a new code.', 400));
     }
 
     user.password = newPassword;
@@ -228,7 +259,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
     res.status(200).json({
       status: 'success',
-      message: 'Password reset successful'
+      message: 'Password reset successful! You can now log in with your new password.'
     });
   } catch (error) {
     next(error);

@@ -187,11 +187,13 @@ export const sendPasswordResetEmail = async (toEmail: string, recipientName: str
   try {
     const from = process.env.SMTP_FROM || `"Elevate Technology" <${process.env.SMTP_USER || 'elevatetechnologies23@gmail.com'}>`;
 
+    console.log(`[EMAIL] Dispatching password reset OTP email to ${toEmail}...`);
+
     const info = await sendMailWithFallback({
       from,
       to: toEmail,
       subject: `🔐 Your OTP Code is ${otp} — Elevate Technology`,
-      text: `Hello ${recipientName || 'Valued User'},\n\nYour Elevate Technology password reset OTP is: ${otp}\n\nThis OTP expires in 10 minutes. If you did not request this, please ignore this email.`,
+      text: `Hello ${recipientName || 'Valued User'},\n\nYour Elevate Technology password reset OTP is: ${otp}\n\nThis OTP expires in 15 minutes. If you did not request this, please ignore this email.`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;padding:24px;background:#fff">
           <div style="text-align:center;border-bottom:2px solid #0052FF;padding-bottom:14px;margin-bottom:20px">
@@ -200,7 +202,7 @@ export const sendPasswordResetEmail = async (toEmail: string, recipientName: str
           </div>
           <p style="font-size:15px;color:#1e293b">Hello <strong>${recipientName || 'Valued User'}</strong>,</p>
           <p style="font-size:13px;color:#475569;line-height:1.6">
-            We received a request to reset your account password. Use the OTP below to continue. It expires in <strong>10 minutes</strong>.
+            We received a request to reset your account password. Use the OTP below to continue. It expires in <strong>15 minutes</strong>.
           </p>
           <div style="background:#f8fafc;border:2px dashed #0052FF;border-radius:10px;padding:20px;text-align:center;margin:24px 0">
             <span style="font-size:11px;text-transform:uppercase;color:#64748b;font-weight:bold;letter-spacing:1px;display:block;margin-bottom:8px">Your One-Time Password (OTP)</span>
@@ -213,10 +215,10 @@ export const sendPasswordResetEmail = async (toEmail: string, recipientName: str
         </div>
       `
     });
-    console.log(`Password reset OTP email sent to ${toEmail}: ${info.messageId}`);
+    console.log(`[EMAIL] Password reset OTP email sent successfully to ${toEmail}: ${info.messageId}`);
     return info;
   } catch (error) {
-    console.error('Error sending password reset email:', error);
+    console.error('[EMAIL] Error sending password reset email:', error);
     throw error;
   }
 };
